@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:backgroundTint="@color/c15"
+    android:id="@+id/group_progress_card"
     app:cardUseCompatPadding="true">
 
     <LinearLayout

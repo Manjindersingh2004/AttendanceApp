@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
     EditText Edtname,Edtrollno;
     Button addStudent;
-    Spinner spinner;
+
     String group;
     ArrayList<String> arrayList=new ArrayList<>();
 
@@ -54,11 +54,10 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
      * @return A new instance of fragment BottomDialogAddStudentFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BottomDialogAddStudentFragment newInstance(String param1, String param2) {
+    public static BottomDialogAddStudentFragment newInstance(String param1) {
         BottomDialogAddStudentFragment fragment = new BottomDialogAddStudentFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,8 +66,7 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            group = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -80,21 +78,21 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
         Edtname=view.findViewById(R.id.Edit_Text_name);
         Edtrollno=view.findViewById(R.id.Edit_text_Rollno_update);
         addStudent=view.findViewById(R.id.add_student_button);
-        spinner=view.findViewById(R.id.select_group_spinner);
-        putItemInArrayList();
-        ArrayAdapter adapter= new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,arrayList);
-        spinner.setAdapter(adapter);
+//        spinner=view.findViewById(R.id.select_group_spinner);
+//        putItemInArrayList();
+//        ArrayAdapter adapter= new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,arrayList);
+//        spinner.setAdapter(adapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                group=arrayList.get(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                group=arrayList.get(0);
-            }
-        });
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                group=arrayList.get(position);
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                group=arrayList.get(0);
+//            }
+//        });
 
         addStudent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,9 +144,9 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        if (getActivity() instanceof ManageDataActivity) {
-            ManageDataActivity activity = (ManageDataActivity) getActivity();
-            activity.updateManageScreen();
+        if (getActivity() instanceof ViewAttendanceActivity) {
+            ViewAttendanceActivity activity = (ViewAttendanceActivity) getActivity();
+            activity.getAdapter().putValuesInArrayList();
         }
     }
 

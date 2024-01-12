@@ -3,14 +3,17 @@ package com.example.attendanceapp;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -19,12 +22,19 @@ import java.util.ArrayList;
 
 public class  AdapterViewAttendance extends RecyclerView.Adapter<AdapterViewAttendance.ViewHolder> {
 
-    ArrayList<StudentDataModel> arraylist=new ArrayList<>();
+    static ArrayList<StudentDataModel> arraylist=new ArrayList<>();
     Context context;
+    String mode,key;
 
-    AdapterViewAttendance(Context context, ArrayList<StudentDataModel> arraylist){
+FragmentManager fm;
+
+
+    AdapterViewAttendance(Context context,String key,  String mode, FragmentManager fm){
         this.context=context;
-        this.arraylist=arraylist;
+        this.mode=mode;
+        this.fm=fm;
+        this.key=key;
+        putValuesInArrayList();
     }
     @NonNull
     @Override
@@ -51,12 +61,28 @@ public class  AdapterViewAttendance extends RecyclerView.Adapter<AdapterViewAtte
             holder.progress.setIndicatorColor(ContextCompat.getColor(context,R.color.green_));
         }
         holder.ratio.setText((arraylist.get(position).ATEND_LEC)+"/"+arraylist.get(position).TOTAL_LEC);
+
+
+        holder.attandanceCard.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                if(mode.equals("simple")){
+
+                    int pos=holder.getAdapterPosition();
+                    showPopupMenu(v,arraylist.get(pos).ROLL_NO,pos);
+
+
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        if(arraylist.size()<1)
-            Toast.makeText(context, "No Data Found", Toast.LENGTH_SHORT).show();
+
         return arraylist.size();
     }
 
@@ -104,6 +130,57 @@ public class  AdapterViewAttendance extends RecyclerView.Adapter<AdapterViewAtte
 //            return R.color.c10;
 //        else
 //            return R.color.c11;
+
+    }
+
+    private void showPopupMenu(View view,String rollno,int pos) {
+        PopupMenu popupMenu = new PopupMenu(context, view);
+        popupMenu.getMenuInflater().inflate(R.menu.delete_update_menu, popupMenu.getMenu());
+        int id1=R.id.delete_item_menu,id2=R.id.update_item_menu;
+
+        popupMenu.getMenu().getItem(0).setTitle("Delete Student");
+        popupMenu.getMenu().getItem(1).setTitle("Update Student");
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+               if(item.getItemId()==id1){
+                   removeStudentFromTable(rollno);
+                   arraylist.remove(pos);
+                   notifyItemRemoved(pos);
+                   return true;
+               } else if (item.getItemId()==id2) {
+                   BottomDialogUpdateStudentFragment fg=BottomDialogUpdateStudentFragment.newInstance(rollno,arraylist.get(0).ROLL_NO,arraylist.get(0).NAME,arraylist.get(0).GROUP);
+                   fg.show(fm, fg.getTag());
+                   //putValuesInArrayList();
+                   return true;
+               }
+               else{
+                   return true;
+               }
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    void removeStudentFromTable(String rollno){
+        new DataBaseHelper(context).removeStudent(rollno);
+    }
+
+    void putValuesInArrayList() {
+        ArrayList<StudentDataModel> newData;
+        if (key.equals("Detained Students"))
+            newData = new DataBaseHelper(context).fetchDetainedStudentData();
+        else
+            newData =new DataBaseHelper(context).fetchGroupData(key);
+
+        // Update the existing arraylist with the new data
+        arraylist.clear();
+        arraylist.addAll(newData);
+
+        // Notify the adapter that the data has changed
+        notifyDataSetChanged();
 
     }
 }

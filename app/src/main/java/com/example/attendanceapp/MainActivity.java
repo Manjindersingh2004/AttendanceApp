@@ -42,14 +42,16 @@ public class MainActivity extends AppCompatActivity {
         addItemToGroupList();
         recyclerView=findViewById(R.id.recycler_view_group_progress);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter=new AdapterGroupAverage(this,arrayList);
+        adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager());
         recyclerView.setAdapter(adapter);
+
+//        prepareScreen();
 
         manageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i= new Intent(getApplicationContext(),ManageDataActivity.class);
-                startActivity(i);
+                BottomDialogAddGroupFragment fg= new BottomDialogAddGroupFragment();
+                fg.show(getSupportFragmentManager(),fg.getTag());
 
             }
         });
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         addItemToGroupList();
-        adapter=new AdapterGroupAverage(this,arrayList);
+        adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager());
         recyclerView.setAdapter(adapter);
         attendanceSection=findViewById(R.id.student_attendance_section_linear_layout);
         nothingHere=findViewById(R.id.nothing_is_here_linear_layout);
@@ -162,6 +164,21 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setVisibility(View.GONE);
         }
     }
+
+//    void prepareScreen(){
+//        attendanceSection=findViewById(R.id.student_attendance_section_linear_layout);
+//        nothingHere=findViewById(R.id.nothing_is_here_linear_layout);
+//        Integer flag=checkDataExists("2"," ");
+//        if(flag==1){
+//            nothingHere.setVisibility(View.GONE);
+//            attendanceSection.setVisibility(View.VISIBLE);
+//            //recyclerView.setVisibility(View.VISIBLE);
+//        } else{
+//            attendanceSection.setVisibility(View.GONE);
+//            nothingHere.setVisibility(View.VISIBLE);
+//            //recyclerView.setVisibility(View.GONE);
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -182,5 +199,10 @@ public class MainActivity extends AppCompatActivity {
         arrayList=new ArrayList<>();
         DataBaseHelper db= new DataBaseHelper(this);
         arrayList=db.fetchGroupTable();
+        if(adapter!=null)
+        adapter.notifyDataSetChanged();
+    }
+    AdapterGroupAverage getAdapter(){
+        return adapter;
     }
 }

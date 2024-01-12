@@ -1,7 +1,9 @@
 package com.example.attendanceapp;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -156,5 +158,14 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
     private int checkRollnoExists(String rollno) {
         DataBaseHelper db =new DataBaseHelper(getContext());
         return db.checkRollnoExists(rollno);
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (getActivity() instanceof ViewAttendanceActivity) {
+            ViewAttendanceActivity activity = (ViewAttendanceActivity) getActivity();
+            activity.getAdapter().putValuesInArrayList();
+        }
     }
 }

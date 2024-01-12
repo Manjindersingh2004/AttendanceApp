@@ -1,7 +1,9 @@
 package com.example.attendanceapp;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.fragment.app.Fragment;
 
@@ -30,7 +32,7 @@ import java.util.ArrayList;
 
  */
 public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
-    AppCompatSpinner spinner;
+//    AppCompatSpinner spinner;
     EditText Edtgroup;
     Button btn;
     String group,newGroup;
@@ -58,11 +60,10 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
      * @return A new instance of fragment BottomDialogRenameGroupFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BottomDialogRenameGroupFragment newInstance(String param1, String param2) {
+    public static BottomDialogRenameGroupFragment newInstance(String param1) {
         BottomDialogRenameGroupFragment fragment = new BottomDialogRenameGroupFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,8 +72,7 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            group = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -81,23 +81,23 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_bottom_dialog_rename_group, container, false);
 
-        spinner=view.findViewById(R.id.rename_group_spinner);
+//        spinner=view.findViewById(R.id.rename_group_spinner);
         Edtgroup=view.findViewById(R.id.Edit_text_rename_group);
         btn=view.findViewById(R.id.rename_group_button);
-        addItemToGroupList();
-        ArrayAdapter adapter= new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,arrayList);
-        spinner.setAdapter(adapter);
+//        addItemToGroupList();
+//        ArrayAdapter adapter= new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,arrayList);
+//        spinner.setAdapter(adapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                group=arrayList.get(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                group=arrayList.get(0);
-            }
-        });
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                group=arrayList.get(position);
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                group=arrayList.get(0);
+//            }
+//        });
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,5 +130,15 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
     private int checkGroupExists(String group) {
         DataBaseHelper db=new DataBaseHelper(getContext());
         return db.checkGroupExists(group);
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        if (getActivity() instanceof MainActivity) {
+            MainActivity activity=(MainActivity) getActivity();
+            activity.getAdapter().addItemToGroupList();
+        }
     }
 }

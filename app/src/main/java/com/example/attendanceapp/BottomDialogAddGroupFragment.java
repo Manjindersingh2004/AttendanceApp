@@ -23,6 +23,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
     EditText Edtgroup;
     Button btn;
+    String group;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,7 +77,7 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String group=Edtgroup.getText().toString().toUpperCase();
+               group=Edtgroup.getText().toString().toUpperCase();
                 int exist=checkGroupExists(group);
                 if(group.isEmpty()){
                     Edtgroup.setError("Please Enter Group");
@@ -107,9 +108,10 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        if (getActivity() instanceof ManageDataActivity) {
-            ManageDataActivity activity = (ManageDataActivity) getActivity();
-            activity.updateManageScreen();
+        if (getActivity() instanceof MainActivity) {
+            MainActivity activity = (MainActivity) getActivity();
+            activity.getAdapter().addItemToGroupList();
+            activity.recyclerView.smoothScrollToPosition(activity.getAdapter().group_list.indexOf(group));
         }
     }
 }

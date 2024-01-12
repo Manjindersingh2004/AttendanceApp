@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class ViewAttendanceActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+    AppCompatButton addStudent;
     TextView Heading;
     String key,flag,date;// group name
     ArrayList<StudentDataModel> arrayList=new ArrayList<>();
@@ -38,6 +39,8 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         takeAttendanceButton=findViewById(R.id.take_attendance_submit_button);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         viewDetailAttendance=findViewById(R.id.Detail_view_attendance_button);
+        addStudent=findViewById(R.id.floating_button_add_Student);
+        addStudent.setVisibility(View.GONE);
         putValuesInArrayList();
         if(flag.equals("1")){
             // arrayList.add(new StudentDataModel(null,null,null,null,null,null));
@@ -53,14 +56,19 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             takeAttendanceButton.setVisibility(View.VISIBLE);
         }
         else{
-            adapterViewAttendance=new AdapterViewAttendance(this,arrayList);
-            recyclerView.setAdapter(adapterViewAttendance);
-            if(key.equals("Detained Students"))
+
+
+            if(key.equals("Detained Students")){
                 Heading.setText(key);
+                adapterViewAttendance=new AdapterViewAttendance(this,key,"detained",getSupportFragmentManager());
+            }
             else{
+                addStudent.setVisibility(View.VISIBLE);
                 Heading.setText("Group: "+key);
                 viewDetailAttendance.setVisibility(View.VISIBLE);
+                adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager());
             }
+            recyclerView.setAdapter(adapterViewAttendance);
 
         }
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +104,15 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             }
         });
 
+        addStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomDialogAddStudentFragment fg=BottomDialogAddStudentFragment.newInstance(key);
+                fg.show(getSupportFragmentManager(),fg.getTag());
+
+            }
+        });
+
     }
 
 
@@ -105,5 +122,16 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             arrayList=db.fetchDetainedStudentData();//to get detained student data
         else
             arrayList=db.fetchGroupData(key);//to get group student data
+
+    }
+
+    void reset(){
+        adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager());
+        recyclerView.setAdapter(adapterViewAttendance);
+
+    }
+
+    AdapterViewAttendance getAdapter(){
+        return adapterViewAttendance;
     }
 }

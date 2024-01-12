@@ -1,14 +1,19 @@
 package com.example.attendanceapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -20,10 +25,12 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
 
     Context context;
     ArrayList<String> group_list = new ArrayList<>();
+    FragmentManager fm;
 
-    AdapterGroupAverage(Context context, ArrayList<String> group_list ) {
+    AdapterGroupAverage(Context context, ArrayList<String> group_list,FragmentManager fm ) {
         this.context = context;
         this.group_list = group_list;
+        this.fm=fm;
     }
 
     @NonNull
@@ -47,6 +54,26 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
         holder.students.setText("Students: "+students);
         holder.lectures.setText("Lecture: "+lecture);
 
+        holder.item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(context, ViewAttendanceActivity.class);
+                i.putExtra("key",group_list.get(holder.getAdapterPosition()));
+                i.putExtra("flag","0");
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i);
+            }
+        });
+
+        holder.item.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopupMenu(v, holder.getAdapterPosition());
+
+                return false;
+            }
+        });
+
 
         if(progress<75){
             holder.progressBar.setIndicatorColor(ContextCompat.getColor(context,R.color.red_));
@@ -68,6 +95,7 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
         //ProgressBar progressBar;
 
         CircularProgressIndicator progressBar;
+        CardView item;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -76,6 +104,49 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
             progressBar=itemView.findViewById(R.id.progress_bar);
             students=itemView.findViewById(R.id.group_progress_total_students);
             lectures=itemView.findViewById(R.id.group_progress_total_lecture);
+            item=itemView.findViewById(R.id.group_progress_card);
         }
+    }
+
+    private void showPopupMenu(View view,int pos) {
+        PopupMenu popupMenu = new PopupMenu(context, view);
+        popupMenu.getMenuInflater().inflate(R.menu.delete_update_menu, popupMenu.getMenu());
+        int id1=R.id.delete_item_menu,id2=R.id.update_item_menu;
+
+        popupMenu.getMenu().getItem(0).setTitle("Delete Group");
+        popupMenu.getMenu().getItem(1).setTitle("Rename Group");
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId()==id1){
+                   removeGroupFromTable(group_list.get(pos));
+                    group_list.remove(pos);
+                    notifyItemRemoved(pos);
+                    return true;
+                } else if (item.getItemId()==id2) {
+                    BottomDialogRenameGroupFragment fg=BottomDialogRenameGroupFragment.newInstance(group_list.get(pos));
+                    fg.show(fm,fg.getTag());
+                    return true;
+                }
+                else{
+                    return true;
+                }
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    void removeGroupFromTable(String group){
+        DataBaseHelper db= new DataBaseHelper(context);
+        db.removeGroup(group);
+    }
+
+    void addItemToGroupList(){
+        group_list=new ArrayList<>();
+        DataBaseHelper db= new DataBaseHelper(context);
+        group_list=db.fetchGroupTable();
+        notifyDataSetChanged();
     }
 }
