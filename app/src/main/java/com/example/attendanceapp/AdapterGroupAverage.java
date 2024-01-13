@@ -2,6 +2,8 @@ package com.example.attendanceapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 
 public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverage.ViewHolder> {
 
-
+    Vibrator vibrator;
     Context context;
     ArrayList<String> group_list = new ArrayList<>();
     FragmentManager fm;
@@ -38,6 +40,7 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
     @NonNull
     @Override
     public AdapterGroupAverage.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         View view= LayoutInflater.from(context).inflate(R.layout.group_progress_layout,parent,false);
         return new ViewHolder(view);
     }
@@ -70,6 +73,7 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
         holder.item.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                vibrate(20);
                 showPopupMenu(v, holder.getAdapterPosition());
 
                 return false;
@@ -159,6 +163,14 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
 
     public interface OnItemClickListener {
         void onItemClick();
+    }
+
+    private void vibrate(long milliseconds) {
+        // Check if the device supports vibration
+        if (vibrator != null && vibrator.hasVibrator()) {
+            // Vibrate with the specified duration
+            vibrator.vibrate(VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE));
+        }
     }
 
 }

@@ -2,7 +2,11 @@ package com.example.attendanceapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,10 +21,13 @@ public class ManageDataActivity extends AppCompatActivity {
     AppCompatButton backButton;
     TextView line1,line3;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_data);
+
+
 
         addStudent=findViewById(R.id.add_students_layout);
         removeStudent=findViewById(R.id.remove_students_layout);
@@ -205,6 +212,7 @@ public class ManageDataActivity extends AppCompatActivity {
         DataBaseHelper db= new DataBaseHelper(getApplicationContext());
         db.removeGroup(group);
     }
+
 
 
 

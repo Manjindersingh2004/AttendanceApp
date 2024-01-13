@@ -57,28 +57,52 @@ public class AdapterTakeAttendance extends RecyclerView.Adapter<AdapterTakeAtten
             holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.check));
         }
 
+        holder.updateAttendanceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onclickItem(holder);
+            }
+        });
         holder.attendance_tick_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int clickedPosition = holder.getAdapterPosition();
-
-                // Toggle the attendance state in the list
-                if (attendance.get(clickedPosition).equals("0")) {
-                    attendance.set(clickedPosition, "1");
-                } else {
-                    attendance.set(clickedPosition, "0");
-                }
-
-                // Update the view for the clicked button
-                if (attendance.get(clickedPosition).equals("0")) {
-                    holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.uncheck));
-                } else {
-                    holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.check));
-                }
-
+//                int clickedPosition = holder.getAdapterPosition();
+//
+//                // Toggle the attendance state in the list
+//                if (attendance.get(clickedPosition).equals("0")) {
+//                    attendance.set(clickedPosition, "1");
+//                } else {
+//                    attendance.set(clickedPosition, "0");
+//                }
+//
+//                // Update the view for the clicked button
+//                if (attendance.get(clickedPosition).equals("0")) {
+//                    holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.uncheck));
+//                } else {
+//                    holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.check));
+//                }
+                onclickItem(holder);
             }
         });
 
+    }
+
+    private void onclickItem(ViewHolder holder) {
+        int clickedPosition = holder.getAdapterPosition();
+
+        // Toggle the attendance state in the list
+        if (attendance.get(clickedPosition).equals("0")) {
+            attendance.set(clickedPosition, "1");
+        } else {
+            attendance.set(clickedPosition, "0");
+        }
+
+        // Update the view for the clicked button
+        if (attendance.get(clickedPosition).equals("0")) {
+            holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.uncheck));
+        } else {
+            holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.check));
+        }
     }
 
     @Override
@@ -91,6 +115,7 @@ public class AdapterTakeAttendance extends RecyclerView.Adapter<AdapterTakeAtten
         TextView name,rollno;
         AppCompatButton attendance_tick_button;
         CardView updateAttendanceButton;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

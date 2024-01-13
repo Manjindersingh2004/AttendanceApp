@@ -2,6 +2,8 @@ package com.example.attendanceapp;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +27,7 @@ public class  AdapterViewAttendance extends RecyclerView.Adapter<AdapterViewAtte
     static ArrayList<StudentDataModel> arraylist=new ArrayList<>();
     Context context;
     String mode,key;
-
+    Vibrator vibrator;
 FragmentManager fm;
 OnItemClickListener listener;
 
@@ -43,6 +45,7 @@ OnItemClickListener listener;
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(context).inflate(R.layout.recycler_view_attendance_layout,parent,false);
         ViewHolder viewHolder=new ViewHolder(view);
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         return viewHolder;
     }
 
@@ -71,6 +74,7 @@ OnItemClickListener listener;
 
                 if(mode.equals("simple")){
 
+                    vibrate(20);
                     int pos=holder.getAdapterPosition();
                     showPopupMenu(v,arraylist.get(pos).ROLL_NO,pos);
 
@@ -155,7 +159,7 @@ OnItemClickListener listener;
                    }
                    return true;
                } else if (item.getItemId()==id2) {
-                   BottomDialogUpdateStudentFragment fg=BottomDialogUpdateStudentFragment.newInstance(rollno,arraylist.get(0).ROLL_NO,arraylist.get(0).NAME,arraylist.get(0).GROUP);
+                   BottomDialogUpdateStudentFragment fg=BottomDialogUpdateStudentFragment.newInstance(rollno,arraylist.get(pos).ROLL_NO,arraylist.get(pos).NAME,arraylist.get(pos).GROUP);
                    fg.show(fm, fg.getTag());
                    if(listener!=null){
                        listener.onItemClick();
@@ -194,5 +198,13 @@ OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick();
+    }
+
+    private void vibrate(long milliseconds) {
+        // Check if the device supports vibration
+        if (vibrator != null && vibrator.hasVibrator()) {
+            // Vibrate with the specified duration
+            vibrator.vibrate(VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE));
+        }
     }
 }

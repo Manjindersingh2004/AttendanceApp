@@ -67,25 +67,34 @@ public class AdapterReTakeAttendance extends RecyclerView.Adapter<AdapterReTakeA
         holder.attendance_tick_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int clickedPosition = holder.getAdapterPosition();
-
-                // Toggle the attendance state in the list
-                if (attendance.get(clickedPosition).equals("0")) {
-                    attendance.set(clickedPosition, "1");
-                } else {
-                    attendance.set(clickedPosition, "0");
-                }
-
-                // Update the view for the clicked button
-                if (attendance.get(clickedPosition).equals("0")) {
-                    holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.uncheck));
-                } else {
-                    holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.check));
-                }
-
+                onItemClicked(holder);
+            }
+        });
+        holder.updateAttendanceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClicked(holder);
             }
         });
 
+    }
+
+    private void onItemClicked(ViewHolder holder) {
+        int clickedPosition = holder.getAdapterPosition();
+
+        // Toggle the attendance state in the list
+        if (attendance.get(clickedPosition).equals("0")) {
+            attendance.set(clickedPosition, "1");
+        } else {
+            attendance.set(clickedPosition, "0");
+        }
+
+        // Update the view for the clicked button
+        if (attendance.get(clickedPosition).equals("0")) {
+            holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.uncheck));
+        } else {
+            holder.attendance_tick_button.setBackground(ContextCompat.getDrawable(context, R.drawable.check));
+        }
     }
 
     @Override

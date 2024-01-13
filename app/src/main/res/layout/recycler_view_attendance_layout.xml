@@ -24,13 +24,13 @@
                 android:layout_height="wrap_content"
                 android:text="Manjinder Singh"
                 android:fontFamily="@font/my_font_roboto"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
             <TextView
                 android:id="@+id/roll_no_recycler_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="12101012"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:fontFamily="@font/my_font_roboto_black"
                 />
             <TextView
@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3CE12"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:fontFamily="@font/my_font_roboto_light"
                 android:textColor="#717070"/>
             <TextView
@@ -47,12 +47,13 @@
                 android:layout_height="match_parent"
                 android:text="7/10"
                 android:visibility="gone"
+                android:textSize="14sp"
                 android:fontFamily="@font/my_font_roboto_light"
                 android:textColor="#717070"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -64,20 +65,22 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     app:indicatorColor="@color/green_"
-                    app:indicatorSize="100dp"
+                    app:indicatorSize="70dp"
                     app:showText="true"
                     app:trackColor="#E1F5FE"
-                    app:trackThickness="20dp" />
+                    app:trackThickness="10dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/percentage_group_progress_view_attendance"
                     android:text="100%"
-                    android:textSize="20dp"
+                    android:textSize="15dp"
                     android:layout_centerInParent="true"
                     android:fontFamily="@font/my_font_roboto_light"
                     android:gravity="center_vertical"/>
             </RelativeLayout>
+
         </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

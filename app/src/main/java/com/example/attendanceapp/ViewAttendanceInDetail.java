@@ -107,7 +107,7 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
         TableRow row_heading= new TableRow(this);
         for (int i = 0; i < date.size(); i++) {
             TextView cell = new TextView(this);
-            cell.setTextSize(25);
+            cell.setTextSize(18);
 //            cell.setBackgroundColor(getColor(R.color.blue_));
             cell.setPadding(10,5,10,5);
             cell.setBackgroundResource(R.drawable.border);
@@ -133,7 +133,7 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
                         cell.setText("Absent");
                     else
                         cell.setText(row_list.get(j));
-                    cell.setTextSize(20);
+                    cell.setTextSize(15);
                     cell.setBackgroundResource(R.drawable.border);
                     if(row_list.get(j).equals("Present"))
                         cell.setTextColor(getColor(R.color.green_));
