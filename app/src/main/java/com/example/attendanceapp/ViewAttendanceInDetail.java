@@ -3,6 +3,7 @@ package com.example.attendanceapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -36,6 +38,7 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
     AppCompatButton backbutton;
     Button exportButton;
     String group="hello";
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,11 +47,13 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
         heading=findViewById(R.id.Heading_Table_view);
         backbutton=findViewById(R.id.back_button_table);
         exportButton=findViewById(R.id.exportButton_detail_activity);
+        progressBar=findViewById(R.id.progress);
 
         Intent i=getIntent();
         group=i.getStringExtra("group");
 
-        heading.setText("Group: "+group);
+//        heading.setText("Group: "+group);
+        heading.setText(group);
         DataForTAble();
 
         exportButton.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +65,9 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
                     // Request the permission
                     requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},444);
                 } else {
+                    progressBar.setVisibility(View.VISIBLE);
                     convertTableLayoutToExcel(getApplicationContext(),tableLayout,"Attendance_of_"+group+".xlsx");
+
                 }
             }
         });
@@ -174,13 +181,14 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
             workbook.write(fos);
             fos.close();
             Toast.makeText(getApplicationContext(), "Download Succes", Toast.LENGTH_LONG).show();
+
+            progressBar.setVisibility(View.GONE);
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Download failed", Toast.LENGTH_LONG).show();
-
+            progressBar.setVisibility(View.GONE);
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

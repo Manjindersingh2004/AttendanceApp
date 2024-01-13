@@ -26,11 +26,13 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
     Context context;
     ArrayList<String> group_list = new ArrayList<>();
     FragmentManager fm;
+    OnItemClickListener listener;
 
-    AdapterGroupAverage(Context context, ArrayList<String> group_list,FragmentManager fm ) {
+    AdapterGroupAverage(Context context, ArrayList<String> group_list,FragmentManager fm,OnItemClickListener listener ) {
         this.context = context;
         this.group_list = group_list;
         this.fm=fm;
+        this.listener=listener;
     }
 
     @NonNull
@@ -123,6 +125,10 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
                    removeGroupFromTable(group_list.get(pos));
                     group_list.remove(pos);
                     notifyItemRemoved(pos);
+                    if (listener != null) {
+                        listener.onItemClick();
+                    }
+
                     return true;
                 } else if (item.getItemId()==id2) {
                     BottomDialogRenameGroupFragment fg=BottomDialogRenameGroupFragment.newInstance(group_list.get(pos));
@@ -149,4 +155,10 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
         group_list=db.fetchGroupTable();
         notifyDataSetChanged();
     }
+
+
+    public interface OnItemClickListener {
+        void onItemClick();
+    }
+
 }

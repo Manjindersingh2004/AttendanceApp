@@ -77,12 +77,11 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               group=Edtgroup.getText().toString().toUpperCase();
+               group=removeSpecialCharacters(Edtgroup.getText().toString().toUpperCase());
                 int exist=checkGroupExists(group);
                 if(group.isEmpty()){
                     Edtgroup.setError("Please Enter Group");
-                }
-                else if (exist==1) {
+                }  else if (exist==1) {
                     Edtgroup.setError("Group Already Exixts");
                 }
                 else if(!group.isEmpty() && exist==0){
@@ -94,6 +93,11 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
         });
         // Inflate the layout for this fragment
         return view;    }
+
+    private boolean checkAllowed(String group) {
+
+        return true;
+    }
 
     private int checkGroupExists(String group) {
         DataBaseHelper db=new DataBaseHelper(getContext());
@@ -111,7 +115,12 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
         if (getActivity() instanceof MainActivity) {
             MainActivity activity = (MainActivity) getActivity();
             activity.getAdapter().addItemToGroupList();
-            activity.recyclerView.smoothScrollToPosition(activity.getAdapter().group_list.indexOf(group));
+            activity.onResume();
+          //  activity.recyclerView.smoothScrollToPosition(activity.getAdapter().group_list.indexOf(group));
         }
+    }
+    private static String removeSpecialCharacters(String input) {
+        // Use regular expression to replace characters that are not alphabets, spaces, or numbers
+        return input.replaceAll("[^a-zA-Z0-9\\s]", "_");
     }
 }

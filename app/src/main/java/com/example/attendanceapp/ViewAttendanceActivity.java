@@ -8,14 +8,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ViewAttendanceActivity extends AppCompatActivity {
+public class ViewAttendanceActivity extends AppCompatActivity implements AdapterViewAttendance.OnItemClickListener{
 
     RecyclerView recyclerView;
     AppCompatButton addStudent;
+    LinearLayout nothingLayout;
     TextView Heading;
     String key,flag,date;// group name
     ArrayList<StudentDataModel> arrayList=new ArrayList<>();
@@ -40,6 +42,7 @@ public class ViewAttendanceActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         viewDetailAttendance=findViewById(R.id.Detail_view_attendance_button);
         addStudent=findViewById(R.id.floating_button_add_Student);
+        nothingLayout=findViewById(R.id.nothing_is_here_linear_layout_view_attendance);
         addStudent.setVisibility(View.GONE);
         putValuesInArrayList();
         if(flag.equals("1")){
@@ -60,13 +63,14 @@ public class ViewAttendanceActivity extends AppCompatActivity {
 
             if(key.equals("Detained Students")){
                 Heading.setText(key);
-                adapterViewAttendance=new AdapterViewAttendance(this,key,"detained",getSupportFragmentManager());
+                adapterViewAttendance=new AdapterViewAttendance(this,key,"detained",getSupportFragmentManager(),this);
             }
             else{
                 addStudent.setVisibility(View.VISIBLE);
-                Heading.setText("Group: "+key);
+//                Heading.setText("Group: "+key);
+                Heading.setText(key);
                 viewDetailAttendance.setVisibility(View.VISIBLE);
-                adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager());
+                adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager(),this);
             }
             recyclerView.setAdapter(adapterViewAttendance);
 
@@ -109,7 +113,6 @@ public class ViewAttendanceActivity extends AppCompatActivity {
             public void onClick(View v) {
                 BottomDialogAddStudentFragment fg=BottomDialogAddStudentFragment.newInstance(key);
                 fg.show(getSupportFragmentManager(),fg.getTag());
-
             }
         });
 
@@ -126,12 +129,39 @@ public class ViewAttendanceActivity extends AppCompatActivity {
     }
 
     void reset(){
-        adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager());
+        adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager(),this);
         recyclerView.setAdapter(adapterViewAttendance);
 
     }
 
     AdapterViewAttendance getAdapter(){
         return adapterViewAttendance;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(flag.equals("0") && !key.equals("Detained Students")){
+            int flag=checkDataExists("1",key);
+            if(flag==1){
+                nothingLayout.setVisibility(View.GONE);
+                viewDetailAttendance.setVisibility(View.VISIBLE);
+            } else{
+                nothingLayout.setVisibility(View.VISIBLE);
+                viewDetailAttendance.setVisibility(View.GONE);
+            }
+        }
+
+
+    }
+
+    Integer checkDataExists(String table,String group){
+        DataBaseHelper db= new DataBaseHelper(getApplicationContext());
+        return db.checkDataExists(table,group);
+    }
+
+    @Override
+    public void onItemClick() {
+        onResume();
     }
 }

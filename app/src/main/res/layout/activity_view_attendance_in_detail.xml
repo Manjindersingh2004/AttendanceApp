@@ -5,47 +5,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ViewAttendanceInDetail">
+
     <LinearLayout
         android:id="@+id/headingLayout_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+       >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/Heading_Table_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="0dp">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/back_button_table"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/back_button" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingHorizontal="10dp">
-
-            <TextView
-                android:id="@+id/Heading_Table_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Manage Data"
-                android:fontFamily="@font/my_font_roboto_light"
-                android:gravity="center"
-                android:textSize="28sp"
-                android:layout_marginBottom="10dp"/>
-
-        </LinearLayout>
+            android:background="@color/blue_"
+            android:fontFamily="@font/my_font_roboto_light"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="Attendance"
+            android:textColor="@color/white"
+            android:textSize="25sp" />
     </LinearLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/back_button_table"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/back_button"
+        android:backgroundTint="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/headingLayout_table"/>
+<!--    -->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/headingLayout_table"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:layout_marginBottom="0dp">-->
+
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/back_button_table"-->
+<!--                android:layout_width="40dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:background="@drawable/back_button" />-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:paddingHorizontal="10dp">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/Heading_Table_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:text="Manage Data"-->
+<!--                android:fontFamily="@font/my_font_roboto_light"-->
+<!--                android:gravity="center"-->
+<!--                android:textSize="28sp"-->
+<!--                android:layout_marginBottom="10dp"/>-->
+
+<!--        </LinearLayout>-->
+<!--    </LinearLayout>-->
 
 
     <ScrollView
@@ -53,6 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
+        android:layout_marginTop="5dp"
         android:overScrollMode="never"
         app:layout_constraintBottom_toTopOf="@+id/exportButton_detail_activity"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,5 +126,14 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/progress"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView3"
+        app:layout_constraintStart_toStartOf="@+id/scrollView3"
+        app:layout_constraintTop_toBottomOf="@+id/headingLayout_table" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

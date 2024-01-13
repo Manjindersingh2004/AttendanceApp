@@ -27,14 +27,16 @@ public class  AdapterViewAttendance extends RecyclerView.Adapter<AdapterViewAtte
     String mode,key;
 
 FragmentManager fm;
+OnItemClickListener listener;
 
 
-    AdapterViewAttendance(Context context,String key,  String mode, FragmentManager fm){
+    AdapterViewAttendance(Context context,String key,  String mode, FragmentManager fm,OnItemClickListener listener){
         this.context=context;
         this.mode=mode;
         this.fm=fm;
         this.key=key;
         putValuesInArrayList();
+        this.listener=listener;
     }
     @NonNull
     @Override
@@ -148,10 +150,16 @@ FragmentManager fm;
                    removeStudentFromTable(rollno);
                    arraylist.remove(pos);
                    notifyItemRemoved(pos);
+                   if(listener!=null){
+                       listener.onItemClick();
+                   }
                    return true;
                } else if (item.getItemId()==id2) {
                    BottomDialogUpdateStudentFragment fg=BottomDialogUpdateStudentFragment.newInstance(rollno,arraylist.get(0).ROLL_NO,arraylist.get(0).NAME,arraylist.get(0).GROUP);
                    fg.show(fm, fg.getTag());
+                   if(listener!=null){
+                       listener.onItemClick();
+                   }
                    //putValuesInArrayList();
                    return true;
                }
@@ -182,5 +190,9 @@ FragmentManager fm;
         // Notify the adapter that the data has changed
         notifyDataSetChanged();
 
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick();
     }
 }

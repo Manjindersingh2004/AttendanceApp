@@ -147,6 +147,7 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
         if (getActivity() instanceof ViewAttendanceActivity) {
             ViewAttendanceActivity activity = (ViewAttendanceActivity) getActivity();
             activity.getAdapter().putValuesInArrayList();
+            activity.onResume();
         }
     }
 

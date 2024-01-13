@@ -92,8 +92,13 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
             BottomSheetDialogFragmentDatePicker fg=BottomSheetDialogFragmentDatePicker.newInstance(group,"retake_attendance");
             fg.show(appCompatActivity.getSupportFragmentManager(),fg.getTag());
 
-        }
-        else{
+        } else if (flag=="7") {
+            //download attendance
+            Intent i=new Intent(context, ViewAttendanceInDetail.class);
+            i.putExtra("group",group);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(i);
+        } else{
             Intent i=new Intent(context, ViewAttendanceActivity.class);
             i.putExtra("key",group);
             i.putExtra("flag",flag);

@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-    CardView viewAttendanceCard,detainedListCard,takeAttendanceCard,resetAttendance,modifyAttendance,deleteAttendance;
+public class MainActivity extends AppCompatActivity implements AdapterGroupAverage.OnItemClickListener{
+    CardView downloadCard,detainedListCard,takeAttendanceCard,resetAttendance,modifyAttendance,deleteAttendance;
     AppCompatButton manageButton;
     ArrayList<String> arrayList;
 
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewAttendanceCard=findViewById(R.id.view_attendance_card);
+        downloadCard=findViewById(R.id.download_list_card);
         detainedListCard=findViewById(R.id.detained_list_card);
         takeAttendanceCard=findViewById(R.id.take_attendance_card);
         manageButton=findViewById(R.id.floating_buttonHomePage);
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         addItemToGroupList();
         recyclerView=findViewById(R.id.recycler_view_group_progress);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager());
+        adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager(),this);
         recyclerView.setAdapter(adapter);
 
 //        prepareScreen();
@@ -55,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        viewAttendanceCard.setOnClickListener(new View.OnClickListener() {
+        downloadCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int flag=checkDataExists("2"," ");
                 if(flag==1){
-                    BottomSheetFragment fg=BottomSheetFragment.newInstance("0");//
+                    BottomSheetFragment fg=BottomSheetFragment.newInstance("7");//
                     fg.show(getSupportFragmentManager(),fg.getTag());//
                 }
                 else{
@@ -149,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         addItemToGroupList();
-        adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager());
-        recyclerView.setAdapter(adapter);
+//        adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager());
+//        recyclerView.setAdapter(adapter);
         attendanceSection=findViewById(R.id.student_attendance_section_linear_layout);
         nothingHere=findViewById(R.id.nothing_is_here_linear_layout);
         Integer flag=checkDataExists("2"," ");
@@ -199,10 +199,16 @@ public class MainActivity extends AppCompatActivity {
         arrayList=new ArrayList<>();
         DataBaseHelper db= new DataBaseHelper(this);
         arrayList=db.fetchGroupTable();
-        if(adapter!=null)
-        adapter.notifyDataSetChanged();
+        if(adapter!=null){
+            adapter.notifyDataSetChanged();
+        }
     }
     AdapterGroupAverage getAdapter(){
         return adapter;
+    }
+
+    @Override
+    public void onItemClick() {
+        onResume();
     }
 }
