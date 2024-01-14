@@ -32,11 +32,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ManageDataActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="false"></activity>
     </application>
 
 </manifest>

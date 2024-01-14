@@ -171,18 +171,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-
-
-    ArrayList<StudentDataModel> fetchOneRow(String key){
-        ArrayList<StudentDataModel> arrayList=new ArrayList<>();
-        SQLiteDatabase db=this.getReadableDatabase();
-        String quary="SELECT * FROM "+ STUDENT_TABLE +" WHERE "+COL_ROLLNO+"="+Integer.parseInt(key);
-        Cursor c=db.rawQuery(quary,null);
-        if(c.moveToFirst()){
-            arrayList.add(new StudentDataModel(c.getString(0),c.getString(1),c.getString(2),String.valueOf(c.getInt(3)),String.valueOf(c.getInt(4)),String.valueOf(c.getInt(5))));
-        }
-        return arrayList;
-    }
     ArrayList<StudentDataModel> fetchGroupData(String key){
         ArrayList<StudentDataModel> arrayList=new ArrayList<>();
         SQLiteDatabase db=this.getReadableDatabase();

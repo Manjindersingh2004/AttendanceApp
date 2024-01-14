@@ -127,13 +127,6 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
             arrayList=db.fetchGroupData(key);//to get group student data
 
     }
-
-    void reset(){
-        adapterViewAttendance=new AdapterViewAttendance(this,key,"simple",getSupportFragmentManager(),this);
-        recyclerView.setAdapter(adapterViewAttendance);
-
-    }
-
     AdapterViewAttendance getAdapter(){
         return adapterViewAttendance;
     }

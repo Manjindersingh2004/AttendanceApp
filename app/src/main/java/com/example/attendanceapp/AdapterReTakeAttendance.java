@@ -38,8 +38,6 @@ public class AdapterReTakeAttendance extends RecyclerView.Adapter<AdapterReTakeA
         return db.getAttendanceListFromAttendanceTableByDate(date,arraylist.get(0).GROUP,arraylist);
     }
 
-    AdapterReTakeAttendance(){
-    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,7 +51,7 @@ public class AdapterReTakeAttendance extends RecyclerView.Adapter<AdapterReTakeA
         holder.name.setText(arraylist.get(holder.getAdapterPosition()).NAME.toUpperCase());
         holder.rollno.setText(arraylist.get(holder.getAdapterPosition()).ROLL_NO);
 
-        int color=getColor(position);
+        int color=R.color.c15;
         holder.updateAttendanceButton.setCardBackgroundColor(ContextCompat.getColor(context, color));
 
 
@@ -116,23 +114,7 @@ public class AdapterReTakeAttendance extends RecyclerView.Adapter<AdapterReTakeA
             updateAttendanceButton=itemView.findViewById(R.id.recycler_view_attendance_card);
         }
     }
-    void manageAtendanceIcon(int pos,final View buttonView){
-        if(attendance.get(pos).equals("0")){
-            buttonView.setBackground(ContextCompat.getDrawable(context,R.drawable.check));
-            attendance.set(pos,"1");
-            //Toast.makeText(context, "2: "+pos+" present", Toast.LENGTH_SHORT).show();
 
-        }
-        else {
-            buttonView.setBackground(ContextCompat.getDrawable(context,R.drawable.uncheck));
-            attendance.set(pos,"0");
-            //Toast.makeText(context, "2: "+pos+" absent", Toast.LENGTH_SHORT).show();
-        }
-        String a="";
-        for(int i=0;i<attendance.size();i++)
-            a+=attendance.get(i)+" ";
-        Toast.makeText(context, a+"", Toast.LENGTH_SHORT).show();
-    }
     void updateAttendance(String date){
         DataBaseHelper db=new DataBaseHelper(context);
         db.updateStudentTableAttendanceRetake(arraylist,pastAttendance,attendance);//--------
@@ -142,34 +124,5 @@ public class AdapterReTakeAttendance extends RecyclerView.Adapter<AdapterReTakeA
         ((Activity)context).finish();
     }
 
-    int getColor(int pos){
-        int mod=pos%8;
-        return R.color.c15;
-//        if(mod==0)
-//            return R.color.c0;
-//        else if(mod==1)
-//            return R.color.c1;
-//        else if(mod==2)
-//            return R.color.c2;
-//        else if(mod==3)
-//            return R.color.c3;
-//        else if(mod==4)
-//            return R.color.c4;
-//        else if(mod==5)
-//            return R.color.c5;
-//        else if(mod==6)
-//            return R.color.c6;
-//        else if(mod==7)
-//            return R.color.c7;
-//        else if(mod==8)
-//            return R.color.c8;
-//        else if(mod==9)
-//            return R.color.c9;
-//        else if(mod==10)
-//            return R.color.c10;
-//        else
-//            return R.color.c11;
-
-    }
 
 }

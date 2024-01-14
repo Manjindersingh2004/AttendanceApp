@@ -51,7 +51,7 @@ OnItemClickListener listener;
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        int color=getColor(position);
+        int color=R.color.c15;
         holder.attandanceCard.setCardBackgroundColor(ContextCompat.getColor(context, color));
 
         holder.name.setText(arraylist.get(position).NAME.toUpperCase());
@@ -109,35 +109,7 @@ OnItemClickListener listener;
         }
     }
 
-    int getColor(int pos){
-        int mod=pos%8;
-        return R.color.c15;
-//        if(mod==0)
-//            return R.color.c0;
-//        else if(mod==1)
-//            return R.color.c1;
-//        else if(mod==2)
-//            return R.color.c2;
-//        else if(mod==3)
-//            return R.color.c3;
-//        else if(mod==4)
-//            return R.color.c4;
-//        else if(mod==5)
-//            return R.color.c5;
-//        else if(mod==6)
-//            return R.color.c6;
-//        else if(mod==7)
-//            return R.color.c7;
-//        else if(mod==8)
-//            return R.color.c8;
-//        else if(mod==9)
-//            return R.color.c9;
-//        else if(mod==10)
-//            return R.color.c10;
-//        else
-//            return R.color.c11;
 
-    }
 
     private void showPopupMenu(View view,String rollno,int pos) {
         PopupMenu popupMenu = new PopupMenu(context, view);

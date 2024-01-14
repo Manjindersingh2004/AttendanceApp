@@ -94,11 +94,6 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
         // Inflate the layout for this fragment
         return view;    }
 
-    private boolean checkAllowed(String group) {
-
-        return true;
-    }
-
     private int checkGroupExists(String group) {
         DataBaseHelper db=new DataBaseHelper(getContext());
         return db.checkGroupExists(group);

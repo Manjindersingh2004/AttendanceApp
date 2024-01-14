@@ -81,23 +81,9 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_bottom_dialog_rename_group, container, false);
 
-//        spinner=view.findViewById(R.id.rename_group_spinner);
         Edtgroup=view.findViewById(R.id.Edit_text_rename_group);
         btn=view.findViewById(R.id.rename_group_button);
-//        addItemToGroupList();
-//        ArrayAdapter adapter= new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,arrayList);
-//        spinner.setAdapter(adapter);
 
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                group=arrayList.get(position);
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                group=arrayList.get(0);
-//            }
-//        });
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,10 +105,7 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
         // Inflate the layout for this fragment
         return view;
     }
-    void addItemToGroupList(){
-        DataBaseHelper db= new DataBaseHelper(getContext());
-        arrayList=db.fetchGroupTable();
-    }
+
     void renameGroup(String key,String group){
         DataBaseHelper db= new DataBaseHelper(getContext());
         db.renameGroup(key,group);

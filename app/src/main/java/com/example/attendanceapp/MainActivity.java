@@ -165,21 +165,6 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         }
     }
 
-//    void prepareScreen(){
-//        attendanceSection=findViewById(R.id.student_attendance_section_linear_layout);
-//        nothingHere=findViewById(R.id.nothing_is_here_linear_layout);
-//        Integer flag=checkDataExists("2"," ");
-//        if(flag==1){
-//            nothingHere.setVisibility(View.GONE);
-//            attendanceSection.setVisibility(View.VISIBLE);
-//            //recyclerView.setVisibility(View.VISIBLE);
-//        } else{
-//            attendanceSection.setVisibility(View.GONE);
-//            nothingHere.setVisibility(View.VISIBLE);
-//            //recyclerView.setVisibility(View.GONE);
-//        }
-//    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
