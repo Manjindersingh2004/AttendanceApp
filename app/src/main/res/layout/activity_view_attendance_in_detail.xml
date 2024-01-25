@@ -38,6 +38,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/headingLayout_table"/>
+
+    <TextView
+
+        android:id="@+id/more_button_table"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:gravity="center"
+        android:text="Filter"
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/headingLayout_table"/>
 <!--    -->
 <!--    <LinearLayout-->
 <!--        android:id="@+id/headingLayout_table"-->
@@ -110,20 +126,24 @@
         </HorizontalScrollView>
     </ScrollView>
 
+
     <Button
         android:id="@+id/exportButton_detail_activity"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginVertical="10dp"
+        android:layout_margin="5dp"
         android:backgroundTint="@color/blue_"
         android:fontFamily="@font/my_font_roboto"
-        android:text="Save To Storage"
+        android:gravity="center"
+        android:paddingHorizontal="40dp"
+        android:text="Share"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+
 
 
     <ProgressBar

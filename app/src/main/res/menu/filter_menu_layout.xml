@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/All_dates_item_menu"
+        android:title="All Dates" />
+    <item
+        android:id="@+id/selective_date_item_menu"
+        android:title="Selective Date" />
+</menu>

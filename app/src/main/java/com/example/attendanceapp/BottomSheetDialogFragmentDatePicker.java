@@ -103,13 +103,30 @@ public class BottomSheetDialogFragmentDatePicker extends BottomSheetDialogFragme
                     onclickBtnForDeleteAttendance();
                 } else if (mode.equals("retake_attendance")) {
                     onClickBtnForRetakeAttendance();
-
+                } else if (mode.equals("filter_attendance")) {
+                    onClickBtnForFilter();
                 }
 
             }
         });
         // Inflate the layout for this fragment
         return view;    }
+
+    private void onClickBtnForFilter() {
+        int flag=checkDateExixst(date,group);
+        if(date.length()>0 && flag==1 && validity==1){
+            if (getActivity() instanceof ViewAttendanceInDetail) {
+                ViewAttendanceInDetail activity = (ViewAttendanceInDetail) getActivity();
+                activity.date(date);
+            }
+            dismiss();
+        } else if (flag==0) {
+            Toast.makeText(getContext(), "Attendance Not Exists", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(getContext(), "Enter Valid Date", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void onClickBtnForRetakeAttendance() {
 
