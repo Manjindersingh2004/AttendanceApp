@@ -34,7 +34,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query1 = "CREATE TABLE " + STUDENT_TABLE + " ("
-                + COL_ROLLNO + " INTEGER PRIMARY KEY, "
+                + COL_ROLLNO + " INTEGER , "
                 + COL_NAME + " TEXT,"
                 + COL_GROUP + " TEXT,"
                 + COL_ATEND_LEC + " INTEGER,"
@@ -73,13 +73,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(COL_PERCENTAGE, Integer.parseInt(percentage_));
         db.insert(STUDENT_TABLE, null, values);
         db.close();
-        addRollNoColumnToAtendanceTable(rollno);
+        addRollNoColumnToAtendanceTable(rollno,group);
     }
 
-    public void removeStudent(String rollno) {
-        String group = getGroupName(rollno);
+    public void removeStudent(String rollno,String group) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(STUDENT_TABLE, COL_ROLLNO+"=?", new String[]{rollno});
+        db.delete(STUDENT_TABLE, COL_ROLLNO+"="+rollno+" and "+COL_GROUP+"='"+group+"'",null);
         db.close();
         removeColumnFromAttendanceTable(rollno,group);
     }
@@ -91,38 +90,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(rollno.length()>0 && !rollno.equals(key)){
             ContentValues v = new ContentValues();
             v.put(COL_ROLLNO, Integer.parseInt(rollno));
-            db.update(STUDENT_TABLE, v, COL_ROLLNO+"=?", new String[]{key});
-            renameRollNoCulumnToAttendanceTable(key,rollno);
+            db.update(STUDENT_TABLE, v, COL_ROLLNO+"="+key+" and "+COL_GROUP+"='"+group+"'",null);
+            renameRollNoCulumnToAttendanceTable(key,rollno,group);
             db = this.getWritableDatabase();
             key=rollno;
         }
         if(name.length()>0)
             values.put(COL_NAME, name.toUpperCase());
-        String Exgroup="";
-        String quary="SELECT "+COL_GROUP+" FROM "+STUDENT_TABLE+" WHERE "+COL_ROLLNO+" ="+Integer.parseInt(key);
-        Cursor c= db.rawQuery(quary,null);
-        if(c.moveToFirst())
-            Exgroup=c.getString(0);
-        if(group.length()>0 && !Exgroup.equals(group)){
-            values.put(COL_GROUP, group.toUpperCase());
-            String total_lec=getTotalLectureOfGroup(group);
-            values.put(COL_TOTAL_LEC,total_lec);
-            values.put(COL_ATEND_LEC,"0");
-            values.put(COL_PERCENTAGE,"0");
-        }
-        db.update(STUDENT_TABLE, values, COL_ROLLNO+"=?", new String[]{key});
+//        String Exgroup="";
+//        String quary="SELECT "+COL_GROUP+" FROM "+STUDENT_TABLE+" WHERE "+COL_ROLLNO+" ="+Integer.parseInt(key);
+//        Cursor c= db.rawQuery(quary,null);
+//        if(c.moveToFirst())
+//            Exgroup=c.getString(0);
+//        if(group.length()>0 && !Exgroup.equals(group)){
+//            values.put(COL_GROUP, group.toUpperCase());
+//            String total_lec=getTotalLectureOfGroup(group);
+//            values.put(COL_TOTAL_LEC,total_lec);
+//            values.put(COL_ATEND_LEC,"0");
+//            values.put(COL_PERCENTAGE,"0");
+//        }
+        db.update(STUDENT_TABLE, values, COL_ROLLNO+"="+key+" and "+COL_GROUP+"='"+group+"'", null);
         db.close();
 
-        if(!Exgroup.equals(group)){
-            changeGroupOfRollColumnFromAttendanceTable(Exgroup,rollno);
-        }
+//        if(!Exgroup.equals(group)){
+//            changeGroupOfRollColumnFromAttendanceTable(Exgroup,rollno,group);
+//        }
     }
 
-    void updatePercentage(String key){
+    void updatePercentage(String key,String group){
         SQLiteDatabase db= this.getWritableDatabase();
         db.execSQL("UPDATE " + STUDENT_TABLE +
                 " SET " + COL_PERCENTAGE + " = (" + COL_ATEND_LEC + " * 100) /"+COL_TOTAL_LEC +
-                " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key));
+                " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key)+" and "+COL_GROUP+"='"+group+"'");
         db.close();
     }
 
@@ -137,14 +136,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if(attendance.get(i).equals("1")){
                 db.execSQL("UPDATE " + STUDENT_TABLE +
                         " SET " + COL_ATEND_LEC + " = " + COL_ATEND_LEC + " +1 "+
-                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key));
+                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key)+" and "+COL_GROUP+"='"+group+"'");
             }
             db.execSQL("UPDATE " + STUDENT_TABLE +
                     " SET " + COL_TOTAL_LEC + " = " + COL_TOTAL_LEC + " +1 "+
-                    " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key));
-            updatePercentage(key);
-
-
+                    " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key)+" and "+COL_GROUP+"='"+group+"'");
+            updatePercentage(key,group);
         }
 
     }
@@ -159,12 +156,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if(attendance.get(i).equals("1")){
                 db.execSQL("UPDATE " + STUDENT_TABLE +
                         " SET " + COL_ATEND_LEC + " = " + COL_ATEND_LEC + " -1 "+
-                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key));
+                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key)+" and "+COL_GROUP+"='"+group+"'");
             }
             db.execSQL("UPDATE " + STUDENT_TABLE +
                     " SET " + COL_TOTAL_LEC + " = " + COL_TOTAL_LEC + " -1 "+
-                    " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key));
-            updatePercentage(key);
+                    " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(key)+" and "+COL_GROUP+"='"+group+"'");
+            updatePercentage(key,group);
 
 
         }
@@ -212,25 +209,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         db.close();
     }
-    Integer checkRollnoExists(String rollno){
+    Integer checkRollnoExists(String rollno,String group){
         SQLiteDatabase db=this.getReadableDatabase();
-        String quary="SELECT "+COL_ROLLNO+" FROM "+STUDENT_TABLE+" WHERE "+COL_ROLLNO+" ="+rollno;
+        String quary="SELECT "+COL_ROLLNO+" FROM "+STUDENT_TABLE+" WHERE "+COL_ROLLNO+" ="+rollno+" and "+COL_GROUP+"='"+group+"'";
         Cursor c= db.rawQuery(quary,null);
         if(c.moveToFirst())
             return 1;
         else
             return 0;
     }
-    String getGroupName(String rollno){
-        String group="";
-        SQLiteDatabase db0=this.getReadableDatabase();
-        String quary="SELECT "+COL_GROUP+" FROM "+STUDENT_TABLE+" WHERE "+COL_ROLLNO+" ="+rollno;
-        Cursor c= db0.rawQuery(quary,null);
-        if(c.moveToFirst())
-            group=c.getString(0);
-        db0.close();
-        return  group;
-    }
+//    String getGroupName(String rollno){
+//        String group="";
+//        SQLiteDatabase db0=this.getReadableDatabase();
+//        String quary="SELECT "+COL_GROUP+" FROM "+STUDENT_TABLE+" WHERE "+COL_ROLLNO+" ="+rollno;
+//        Cursor c= db0.rawQuery(quary,null);
+//        if(c.moveToFirst())
+//            group=c.getString(0);
+//        db0.close();
+//        return  group;
+//    }
 
     Integer checkDetainedStudentExist(){
         SQLiteDatabase db=this.getReadableDatabase();
@@ -371,9 +368,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    void addRollNoColumnToAtendanceTable(String rollno){
+    void addRollNoColumnToAtendanceTable(String rollno,String group){
         String Column_name=getRollnoColumnNameAtendanceTable(rollno);
-        String group=getGroupName(rollno);
+        //String group=getGroupName(rollno);
         String Table_name=getAtendanceTableName(group);
         String Quary= "ALTER TABLE " + Table_name + " ADD COLUMN " + Column_name+ " TEXT";
 
@@ -414,8 +411,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
 
-    void renameRollNoCulumnToAttendanceTable(String exrollno, String newRollno) {
-        String group = getGroupName(newRollno); // but not exists ex rollno so use new rollno // then check group change and update
+    void renameRollNoCulumnToAttendanceTable(String exrollno, String newRollno,String group) {
+        //String group = getGroupName(newRollno); // but not exists ex rollno so use new rollno // then check group change and update
         String tableName = getAtendanceTableName(group);
         String oldColumnName = getRollnoColumnNameAtendanceTable(exrollno).toLowerCase();
         String newColumnName = getRollnoColumnNameAtendanceTable(newRollno).toLowerCase();
@@ -449,9 +446,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    void changeGroupOfRollColumnFromAttendanceTable(String exgroup,String rollno) {
+    void changeGroupOfRollColumnFromAttendanceTable(String exgroup,String rollno,String newGroup) {
         removeColumnFromAttendanceTable(rollno,exgroup);
-        addRollNoColumnToAtendanceTable(rollno);
+        addRollNoColumnToAtendanceTable(rollno,newGroup);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -570,7 +567,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     void updateStudentTableAttendanceRetake(ArrayList<StudentDataModel>arrayList ,ArrayList<String> exAttendance,ArrayList<String> newAttendance){
-        String rollno,exAtend,newAtend;
+        String rollno,exAtend,newAtend,group;
+        group=arrayList.get(0).GROUP.toString();
         for(int i=0;i<arrayList.size();i++){
             SQLiteDatabase db=this.getWritableDatabase();
             rollno=arrayList.get(i).ROLL_NO.toString();
@@ -580,14 +578,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 //--
                 db.execSQL("UPDATE " + STUDENT_TABLE +
                         " SET " + COL_ATEND_LEC + " = " + COL_ATEND_LEC + " -1 "+
-                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(rollno));
+                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(rollno)+" and "+COL_GROUP+"='"+group+"'");
             } else if (exAtend.equals("0")&& newAtend.equals("1")) {
                 //++
                 db.execSQL("UPDATE " + STUDENT_TABLE +
                         " SET " + COL_ATEND_LEC + " = " + COL_ATEND_LEC + " +1 "+
-                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(rollno));
+                        " WHERE "+COL_ROLLNO+" = "+Integer.parseInt(rollno)+" and "+COL_GROUP+"='"+group+"'");
             }
-            updatePercentage(rollno);
+            updatePercentage(rollno,group);
             db.close();
         }
     }

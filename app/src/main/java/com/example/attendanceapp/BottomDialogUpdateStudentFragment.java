@@ -27,7 +27,6 @@ import java.util.ArrayList;
  */
 public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment {
     EditText Edtrollno,Edtname;
-    Spinner spinner;
     ArrayList<String> group_list =new ArrayList<>();
     Button btn;
     String rollno,name,group;
@@ -87,28 +86,30 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
         // Inflate the layout for this fragment
         Edtrollno=view.findViewById(R.id.update_roll_number);
         Edtname=view.findViewById(R.id.update_name);
-        spinner=view.findViewById(R.id.select_group_spinner2);
+
         btn=view.findViewById(R.id.update_btn2);
 
         Edtrollno.setText(EXrollno);
         Edtname.setText(EXname);
 
+        group=EXgroup;
+
         addItemToArrayList();
-        ArrayAdapter arrayAdapter=new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,group_list);
-        spinner.setAdapter(arrayAdapter);
-
-        spinner.setSelection(findIndexOfArray(EXgroup));
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                group=group_list.get(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                group="";
-            }
-        });
+//        ArrayAdapter arrayAdapter=new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,group_list);
+//        spinner.setAdapter(arrayAdapter);
+//
+//        spinner.setSelection(findIndexOfArray(EXgroup));
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                group=group_list.get(position);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                group="";
+//            }
+//        });
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +117,7 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
                 name=Edtname.getText().toString();
                 int exist=0;
                 if(!rollno.isEmpty() && !rollno.equals(key))
-                    exist=checkRollnoExists(rollno);
+                    exist=checkRollnoExists(rollno,group);
                 if(name.isEmpty()){
                     Edtname.setError("cannot be empty");
                 }
@@ -155,9 +156,9 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
         DataBaseHelper db= new DataBaseHelper(getContext());
         group_list =db.fetchGroupTable();
     }
-    private int checkRollnoExists(String rollno) {
+    private int checkRollnoExists(String rollno,String group) {
         DataBaseHelper db =new DataBaseHelper(getContext());
-        return db.checkRollnoExists(rollno);
+        return db.checkRollnoExists(rollno,group);
     }
 
     @Override

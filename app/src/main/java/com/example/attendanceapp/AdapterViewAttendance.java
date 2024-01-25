@@ -123,7 +123,7 @@ OnItemClickListener listener;
             public boolean onMenuItemClick(MenuItem item) {
 
                if(item.getItemId()==id1){
-                   removeStudentFromTable(rollno);
+                   removeStudentFromTable(rollno,arraylist.get(0).GROUP);
                    arraylist.remove(pos);
                    notifyItemRemoved(pos);
                    if(listener!=null){
@@ -148,8 +148,8 @@ OnItemClickListener listener;
         popupMenu.show();
     }
 
-    void removeStudentFromTable(String rollno){
-        new DataBaseHelper(context).removeStudent(rollno);
+    void removeStudentFromTable(String rollno,String group){
+        new DataBaseHelper(context).removeStudent(rollno,group);
     }
 
     void putValuesInArrayList() {

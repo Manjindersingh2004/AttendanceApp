@@ -73,25 +73,7 @@
                         android:fontFamily="@font/my_font_roboto_thin"
                         android:inputType="textPersonName"/>
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingBottom="20dp"
-                    >
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Group"
-                        android:fontFamily="@font/my_font_roboto"
-                        android:textSize="20sp"
-                        />
-                    <Spinner
-                        android:id="@+id/select_group_spinner2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="textStart"/>
-                </LinearLayout>
+
                 <Button
                     android:id="@+id/update_btn2"
                     android:layout_width="match_parent"

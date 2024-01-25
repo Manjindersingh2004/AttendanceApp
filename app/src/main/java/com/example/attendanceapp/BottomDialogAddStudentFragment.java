@@ -121,7 +121,7 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
 
     private int checkRollnoExists(String rollno) {
         DataBaseHelper db =new DataBaseHelper(getContext());
-        return db.checkRollnoExists(rollno);
+        return db.checkRollnoExists(rollno,group);
     }
 
     public void onDismiss(DialogInterface dialog) {
