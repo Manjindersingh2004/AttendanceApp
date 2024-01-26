@@ -2,15 +2,24 @@ package com.example.attendanceapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ViewAttendanceActivity extends AppCompatActivity implements AdapterViewAttendance.OnItemClickListener{
@@ -84,10 +93,10 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
         viewDetailAttendance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(ViewAttendanceActivity.this, ViewAttendanceInDetail.class);
-                i.putExtra("group",key);
-                startActivity(i);
-                finish();
+                    Intent i = new Intent(ViewAttendanceActivity.this, ViewAttendanceInDetail.class);
+                    i.putExtra("group", key);
+                    startActivity(i);
+                    finish();
             }
         });
         takeAttendanceButton.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +143,7 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
     @Override
     protected void onResume() {
         super.onResume();
+        //
         if(flag.equals("0") && !key.equals("Detained Students")){
             int flag=checkDataExists("1",key);
             if(flag==1){
@@ -143,6 +153,7 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
                 nothingLayout.setVisibility(View.VISIBLE);
                 viewDetailAttendance.setVisibility(View.GONE);
             }
+
         }
 
 
@@ -157,4 +168,7 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
     public void onItemClick() {
         onResume();
     }
+
+
+
 }

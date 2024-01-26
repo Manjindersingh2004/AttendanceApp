@@ -3,6 +3,7 @@ package com.example.attendanceapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -83,8 +84,11 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
                     requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},444);
                 } else {
                     progressBar.setVisibility(View.VISIBLE);
+
+                    BottomSheetDialogFragmentShareFile fg= BottomSheetDialogFragmentShareFile.newInstance("Attendance_of_"+group);
+                    fg.show(getSupportFragmentManager(),fg.getTag());
                     //convertTableLayoutToExcel(getApplicationContext(),tableLayout,"Attendance_of_"+group+".xlsx");
-                    shareTableLayoutAsImageWithWhiteBackground(tableLayout);
+                    //shareTableLayoutAsImageWithWhiteBackground(tableLayout);
                 }
             }
         });
@@ -391,44 +395,7 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
         DataForTAble(0);
     }
 
-    void shareTableLayoutAsImage(TableLayout tableLayout) {
-        // Create a Bitmap from the TableLayout
-        Bitmap bitmap = Bitmap.createBitmap(tableLayout.getWidth(), tableLayout.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        tableLayout.draw(canvas);
 
-        // Save the Bitmap to a file
-        File imageFile = new File(getExternalCacheDir(), "table_image.png");
-        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-            // Create an Intent with action ACTION_SEND
-            Intent intent = new Intent(Intent.ACTION_SEND);
-
-            // Set the type of data to be sent
-            intent.setType("image/png");
-
-            // Attach the image file to the Intent
-            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".provider", imageFile);
-            intent.putExtra(Intent.EXTRA_STREAM, uri);
-
-            // Set the subject of the email (optional)
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Sharing Table as Image");
-
-            // Set the body of the email (optional)
-            intent.putExtra(Intent.EXTRA_TEXT, "Check out this table!");
-
-            // Grant temporary read permission to the content URI
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            // Start the activity
-            startActivity(Intent.createChooser(intent, "Share Table as Image"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle the exception
-        }
-    }
 
 
     void shareTableLayoutAsImageWithWhiteBackground(TableLayout tableLayout) {
@@ -476,4 +443,11 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
     }
 
 
+
+    TableLayout getTableLayout(){
+        return tableLayout;
+    }
+    ProgressBar getProgressBar(){
+        return progressBar;
+    }
 }
