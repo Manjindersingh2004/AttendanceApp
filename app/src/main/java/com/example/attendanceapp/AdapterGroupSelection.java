@@ -119,8 +119,6 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
         return db.checkDataExists(table,group);
     }
 
-
-
 }
 
 

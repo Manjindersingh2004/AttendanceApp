@@ -58,14 +58,16 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
             // arrayList.add(new StudentDataModel(null,null,null,null,null,null));
             adapterTakeAttendance=new AdapterTakeAttendance(this,arrayList);
             recyclerView.setAdapter(adapterTakeAttendance);
-            Heading.setText("Attendance: "+key);
+            Heading.setText(key);
             takeAttendanceButton.setVisibility(View.VISIBLE);
+            takeAttendanceButton.setText("Update Attendance");
         }
         else if(flag.equals("2")){
             adapterReTakeAttendance=new AdapterReTakeAttendance(this,arrayList,date);
             recyclerView.setAdapter(adapterReTakeAttendance);
-            Heading.setText("Edit Attendance: "+key);
+            Heading.setText(key);
             takeAttendanceButton.setVisibility(View.VISIBLE);
+            takeAttendanceButton.setText("Modify Attendance");
         }
         else{
 

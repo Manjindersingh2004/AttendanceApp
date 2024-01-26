@@ -1,8 +1,10 @@
 package com.example.attendanceapp;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 public class BottomSheetFragment extends BottomSheetDialogFragment {
     RecyclerView recyclerView;
     ArrayList<String> group_list;
+    TextView heading;
 
     BottomSheetFragment fg;
 
@@ -77,6 +81,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
 
+        heading=view.findViewById(R.id.heading_title_group_selection);
+        setHeading();
         recyclerView=view.findViewById(R.id.recycler_select_group);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         addItemToGroupList();
@@ -85,6 +91,34 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         // Inflate the layout for this fragment
         return view;
     }
+
+    private void setHeading() {
+        if(flag=="2"){
+            // reset attendance
+           heading.setText("Reset Attendance");
+
+        } else if (flag=="1") {
+            //take attendance
+            heading.setText("Take Attendance");
+
+
+        } else if (flag=="3") {
+            //delete attendance
+            heading.setText("Delete Attendance");
+
+
+        } else if (flag=="4") {
+            //retake attendance
+            heading.setText("Modify Attendance");
+
+
+        } else if (flag=="7") {
+            //download attendance
+            heading.setText("Export Attendance");
+
+        }
+    }
+
     void addItemToGroupList(){
         DataBaseHelper db= new DataBaseHelper(getContext());
         group_list=db.fetchGroupTable();
