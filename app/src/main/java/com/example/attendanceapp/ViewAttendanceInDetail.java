@@ -79,17 +79,17 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
             public void onClick(View view) {
 
                 // Check if the permission is not granted
-                if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    // Request the permission
-                    requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},444);
-                } else {
+//                if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                    // Request the permission
+//                    requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},444);
+//                } else {
                     progressBar.setVisibility(View.VISIBLE);
 
                     BottomSheetDialogFragmentShareFile fg= BottomSheetDialogFragmentShareFile.newInstance("Attendance_of_"+group);
                     fg.show(getSupportFragmentManager(),fg.getTag());
                     //convertTableLayoutToExcel(getApplicationContext(),tableLayout,"Attendance_of_"+group+".xlsx");
                     //shareTableLayoutAsImageWithWhiteBackground(tableLayout);
-                }
+//                }
             }
         });
         backbutton.setOnClickListener(new View.OnClickListener() {
