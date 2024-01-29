@@ -5,12 +5,40 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.apache.commons.codec.language.bm.Languages;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
+
+    private static final String BackupRefference="BACKUPS";
+    private static final String USER_NAME="MSsandhu2004";
+    private static final String BACKUP_FILE="backup.db";
     private static final String DB_NAME="student_attendance";
     private static final int DB_VERSION=1;
     private static final String STUDENT_TABLE ="students";
@@ -25,10 +53,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String ATTENDANCE_TABLE_PREFIX="attendance_";
     private static final String ATTENDANCE_TABLE_COL_PREFIX="student_";
     private static final String COL_DATE="attendance_date";
+    Context context;
 
 
     public DataBaseHelper(Context context) {
         super(context, DB_NAME, null,DB_VERSION );
+        this.context=context;
     }
 
     @Override
@@ -697,6 +727,217 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         progressData.add(percentage);
         return progressData;
     }
+
+
+
+
+
+
+
+
+
+
+//--------------------------------------Backup-------------------------------------------------------------------------------
+
+
+    public void exportDatabase(Context context) {
+        try {
+            File dataDirectory = Environment.getDataDirectory();
+            String currentDBPath = context.getDatabasePath(DB_NAME).getAbsolutePath();
+            //String backupDBPath = Environment.getExternalStorageDirectory() + File.separator + BACKUP_FILE;
+            String backupDBPath = context.getCacheDir() + File.separator + BACKUP_FILE;
+
+            File currentDB = new File(currentDBPath);
+            File backupDB = new File(backupDBPath);
+
+            if (currentDB.exists()) {
+                FileInputStream fis = new FileInputStream(currentDB);
+                FileOutputStream fos = new FileOutputStream(backupDB);
+                FileChannel src = fis.getChannel();
+                FileChannel dst = fos.getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                fis.close();
+                fos.close();
+
+                // Now, you have a backup of the database at backupDBPath
+                Toast.makeText(context, "Backup done", Toast.LENGTH_SHORT).show();
+                uploadBackup(context);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Backup error", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    void uploadBackup(Context context){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference backupRef = storageRef.child(BackupRefference).child(USER_NAME).child(BACKUP_FILE);
+//        String backupDBPath = Environment.getExternalStorageDirectory() + File.separator + BACKUP_FILE;
+        String backupDBPath = context.getCacheDir() + File.separator + BACKUP_FILE;
+
+        Uri file = Uri.fromFile(new File(backupDBPath));
+        UploadTask uploadTask = backupRef.putFile(file);
+
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Handle successful upload
+                // You can get the download URL if needed: taskSnapshot.getDownloadUrl()
+                Toast.makeText(context, "backup upload", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle failed upload
+                Toast.makeText(context, "backup upload failed", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
+    void downloadBackup(Context context){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference backupRef = storageRef.child(BackupRefference).child(USER_NAME).child(BACKUP_FILE);
+        File localFile = new File(context.getDatabasePath(BACKUP_FILE).getAbsolutePath());
+
+        backupRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                // Database backup downloaded successfully
+                // Now you can proceed to restore the database
+                Toast.makeText(context, "Backup Download ", Toast.LENGTH_SHORT).show();
+                // You may want to notify the user or perform any additional actions
+                storeBackup(context);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle failed download
+                Toast.makeText(context, "Backup Download failed", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+    void storeBackup(Context context){
+        try {
+            String currentDBPath = context.getDatabasePath(DB_NAME).getAbsolutePath();
+            File currentDB = context.getDatabasePath(currentDBPath);
+            File backupDB = new File(context.getDatabasePath(BACKUP_FILE).getAbsolutePath());
+
+            if (backupDB.exists()) {
+                FileInputStream fis = new FileInputStream(backupDB);
+                FileOutputStream fos = new FileOutputStream(currentDB);
+                FileChannel src = fis.getChannel();
+                FileChannel dst = fos.getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                fis.close();
+                fos.close();
+                // Database restored successfully
+                // You may want to notify the user or perform any additional actions
+                Toast.makeText(context, "Backup Stored", Toast.LENGTH_SHORT).show();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Backup Stored failed", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    void uploadAttendance(String group){
+        String Table=getAtendanceTableName(group);
+
+    }
+
+
+
+//    -------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+    void insertAttendanceOnline(String group) {
+
+        ArrayList<StudentDataModel>  arrayList=new ArrayList<>();
+        ArrayList<ArrayList<String>> attendance=new ArrayList<>();
+        ArrayList<String>  dates=new ArrayList<>();
+
+
+        DataBaseHelper db=new DataBaseHelper(context);
+        dates=db.getDatesList(group);
+        arrayList=db.fetchGroupData(group);
+        for(int i=0;i<arrayList.size();i++){
+            String rollno=arrayList.get(i).ROLL_NO;
+            ArrayList<String> row=new ArrayList<>();
+            row=db.getAttendanceAttendanceTAbleOfRollNo(group,rollno);
+            attendance.add(row);
+        }
+
+
+        String rollno,name;
+
+        for (int i = 0; i < dates.size(); i++) {
+
+            String date_=dates.get(i);
+        }
+
+        for(int i=0;i<arrayList.size();i++){
+            ArrayList<String> row_list=new ArrayList<>();
+            row_list=attendance.get(i);
+            rollno=arrayList.get(i).ROLL_NO;
+            name=arrayList.get(i).NAME;
+            for (int j = 0; j < row_list.size(); j++) {
+                String date_=dates.get(j);
+                String attendance_;
+
+                if(row_list.get(j)==null)
+                    attendance_="Absent";
+                else
+                    attendance_=(row_list.get(j));
+                storeAttendanceIntoFirebase(rollno,name,group,date_,attendance_);
+            }
+        }
+    }
+
+
+    String COLLAGES="COLLAGES";
+    String COLLAGE_ID = "12345";
+
+
+    String GROUPS = "GROUPS";
+    String STUDENTS = "STUDENTS";
+    String ATTENDANCE = "ATTENDANCE";
+    String DATE="DATE";
+    String NAME="NAME";
+    String ROLLNO="ROLL_NO";
+    String PERCENTAGE="PERCENTAGE";
+
+    private void storeAttendanceIntoFirebase(String rollno, String name, String group, String date, String attendance) {
+
+
+        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno);
+        attendanceRef.child(NAME).setValue(name);
+        attendanceRef.child(GROUPS).child(group).child(PERCENTAGE).setValue(90);
+        attendanceRef.child(GROUPS).child(group).child(ATTENDANCE).child(date).setValue(attendance);
+    }
+
+
+
+
+
+
+
+
+
 
 }
 

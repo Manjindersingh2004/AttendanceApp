@@ -23,6 +23,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         layout=findViewById(R.id.linearLayout);
         scaleAnimation(layout);
+        new DataBaseHelper(getApplicationContext()).downloadBackup(getApplicationContext());
+
+
 
         new Handler().postDelayed(new Runnable() {
 

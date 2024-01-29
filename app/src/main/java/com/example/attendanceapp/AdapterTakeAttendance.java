@@ -116,6 +116,9 @@ public class AdapterTakeAttendance extends RecyclerView.Adapter<AdapterTakeAtten
         db.incrementAttendanceStudentTable(arraylist,attendance);
         db.entryInAttendanceTable(arraylist,attendance,date);
         Toast.makeText(context, "Updated", Toast.LENGTH_SHORT).show();
+
+        new DataBaseHelper(context).insertAttendanceOnline(arraylist.get(0).GROUP);
+
         ((Activity)context).finish();
     }
 

@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         resetAttendance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 addItemToGroupList();
                 if(arrayList.size()>0){
                     BottomSheetFragment fg=BottomSheetFragment.newInstance("2");//
@@ -110,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
                 }
                 else
                     Toast.makeText(getApplicationContext(), "No Groups Found", Toast.LENGTH_SHORT).show();
-
             }
         });
 
@@ -195,5 +195,11 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
     @Override
     public void onItemClick() {
         onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new DataBaseHelper(getApplicationContext()).exportDatabase(getApplicationContext());
     }
 }
