@@ -74,6 +74,9 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
             db.deleteAttendanceRows(group);
             Toast.makeText(context, "Attendance of "+group+" is Reset", Toast.LENGTH_SHORT).show();
 
+            new DataBaseHelper(context).removeGroupIntoFirebase(group.toUpperCase());
+
+
         } else if (flag=="1") {
             //take attendance
             AppCompatActivity appCompatActivity = (AppCompatActivity) context;// chat gpt

@@ -176,6 +176,10 @@ public class BottomSheetDialogFragmentDatePicker extends BottomSheetDialogFragme
             ArrayList<String> attendance=db.getAttendanceListFromAttendanceTableByDate(date,group,arrayList);
             db.decrementAttendanceStudentTable(arrayList,attendance);
             db.deleteRowByDateInAttendanceTable(date,group);
+            Toast.makeText(getContext(), "Attendance Deleted", Toast.LENGTH_SHORT).show();
+
+            new DataBaseHelper(getContext()).removeAttendanceDateIntoFirebase(group,date);
+
             dismiss();
         } else if (flag==0) {
             Toast.makeText(getContext(), "Attendance Not Exists", Toast.LENGTH_SHORT).show();

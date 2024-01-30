@@ -15,10 +15,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,6 +38,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -883,7 +889,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
 
 
-        String rollno,name;
+        String rollno,name,percentage_;
 
         for (int i = 0; i < dates.size(); i++) {
 
@@ -895,6 +901,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             row_list=attendance.get(i);
             rollno=arrayList.get(i).ROLL_NO;
             name=arrayList.get(i).NAME;
+            percentage_=arrayList.get(i).PERCENTAGE;
             for (int j = 0; j < row_list.size(); j++) {
                 String date_=dates.get(j);
                 String attendance_;
@@ -903,7 +910,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     attendance_="Absent";
                 else
                     attendance_=(row_list.get(j));
-                storeAttendanceIntoFirebase(rollno,name,group,date_,attendance_);
+//                String quary="SELECT "+COL_PERCENTAGE+" FROM "+ STUDENT_TABLE +" WHERE "+COL_GROUP+"='"+group.toUpperCase()+"' and "+COL_ROLLNO+"="+rollno;
+//                Cursor c=db.getReadableDatabase().rawQuery(quary, null);
+//                if(c.moveToFirst()){
+//
+//                        if(c.getString(0)!=null)
+//                            percentage=c.getString(0).toString();
+//
+//                }
+                storeAttendanceIntoFirebase(rollno,name,group,date_,attendance_,percentage_);
             }
         }
     }
@@ -921,23 +936,149 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     String ROLLNO="ROLL_NO";
     String PERCENTAGE="PERCENTAGE";
 
-    private void storeAttendanceIntoFirebase(String rollno, String name, String group, String date, String attendance) {
-
-
+    private void storeAttendanceIntoFirebase(String rollno, String name, String group, String date, String attendance,String percentage) {
         DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno);
+
         attendanceRef.child(NAME).setValue(name);
-        attendanceRef.child(GROUPS).child(group).child(PERCENTAGE).setValue(90);
+        attendanceRef.child(GROUPS).child(group).child(PERCENTAGE).setValue(percentage);
         attendanceRef.child(GROUPS).child(group).child(ATTENDANCE).child(date).setValue(attendance);
     }
 
 
+    void removeGroupIntoFirebase(String group) {
 
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+group.toUpperCase()+"'";
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+            do{
+                FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).child(GROUPS).child(group).removeValue();
+            }
+            while(c.moveToNext());
+        }
+    }
 
+    void removeAttendanceDateIntoFirebase(String group,String date) {
+        String[] parts = date.split("-");
+        if (parts.length == 3) {
+            String year = parts[0];
+            String month = parts[1];
+            String day = parts[2];
+            int month_num = Integer.parseInt(month);
+            switch (month_num) {
+                case 1:
+                    month = " Jan,";
+                    break;
+                case 2:
+                    month = " Feb,";
+                    break;
+                case 3:
+                    month = " Mar,";
+                    break;
+                case 4:
+                    month = " Apr,";
+                    break;
+                case 5:
+                    month = " May,";
+                    break;
+                case 6:
+                    month = " June";
+                    break;
+                case 7:
+                    month = " Jul,";
+                    break;
+                case 8:
+                    month = " Aug,";
+                    break;
+                case 9:
+                    month = " Sep,";
+                    break;
+                case 10:
+                    month = " Oct,";
+                    break;
+                case 11:
+                    month = " Nov,";
+                    break;
+                case 12:
+                    month = " Dec,";
+                    break;
+                default:
+                    month = " Invalid,";
+            }
+            date = day + month +  year;
+        }
+        String rollno;
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+group.toUpperCase()+"'";
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+            do{
+                rollno=c.getString(0);
+                FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno).child(GROUPS).child(group).child(ATTENDANCE).child(date).removeValue();
 
+                quary="SELECT "+COL_PERCENTAGE+" FROM "+ STUDENT_TABLE +" WHERE "+COL_GROUP+"='"+group.toUpperCase()+"' and "+COL_ROLLNO+"="+rollno;
+                Cursor c2=db.rawQuery(quary,null);
+                if(c2.moveToFirst()){
+                    FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno).child(GROUPS).child(group).child(PERCENTAGE).setValue(c2.getString(0));
+                }
 
+            }
+            while(c.moveToNext());
+        }
+    }
 
+    void renameGroupAttendnceInFireBase(String key,String newgroup){
 
+        String rollno;
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+newgroup.toUpperCase()+"'";//because local database is updated already
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+            do{
+                rollno=c.getString(0);
+                DatabaseReference oldGroup= FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno).child(GROUPS).child(key);
+                DatabaseReference newGroup= FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno).child(GROUPS).child(newgroup);
 
+                oldGroup.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            //Toast.makeText(context, "rename Finished 1", Toast.LENGTH_SHORT).show();
+
+                            Object data=snapshot.getValue();
+                            newGroup.setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(context, "rename Finished 1", Toast.LENGTH_SHORT).show();
+
+                                    oldGroup.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                           // Toast.makeText(context, "rename Finished 2", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            });
+                        }else{
+                            //Toast.makeText(context, "rename not Finished 1", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        //Toast.makeText(context, "rename error Finished 1", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+            }
+            while(c.moveToNext());
+        }else{
+            //Toast.makeText(context, "data not found", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    
 
 }
 

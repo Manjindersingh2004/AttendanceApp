@@ -26,7 +26,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         new DataBaseHelper(getApplicationContext()).downloadBackup(getApplicationContext());
 
 
-
         new Handler().postDelayed(new Runnable() {
 
             @Override
