@@ -149,9 +149,10 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
     }
 
     void removeGroupFromTable(String group){
+        new DataBaseHelper(context).removeGroupIntoFirebase(group.toUpperCase());
+
         DataBaseHelper db= new DataBaseHelper(context);
         db.removeGroup(group);
-        new DataBaseHelper(context).removeGroupIntoFirebase(group.toUpperCase());
     }
 
     void addItemToGroupList(){

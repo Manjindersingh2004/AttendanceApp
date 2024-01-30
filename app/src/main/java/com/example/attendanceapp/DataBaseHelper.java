@@ -1078,7 +1078,64 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    
+
+    void addStudentAttendanceFireBase(String rollno,String name,String group){
+        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno);
+        attendanceRef.child(NAME).setValue(name.toUpperCase());
+        attendanceRef.child(GROUPS).child(group.toUpperCase()).child(PERCENTAGE).setValue(0);
+        attendanceRef.child(GROUPS).child(group.toUpperCase()).child(ATTENDANCE).setValue(null);
+    }
+
+    void removeStudentAttendanceFirebase(String rollno,String group){
+        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno);
+
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE;//because local database is updated already
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+           if(c.moveToFirst()){
+               attendanceRef.child(GROUPS).child(group.toUpperCase()).removeValue();
+           }
+           else{
+               attendanceRef.removeValue();
+           }
+        }
+
+    }
+
+    void updateStudentsRollNoAttendanceFireBase(String key,String newrollno,String group,String name){
+        //DatabaseReference oldRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(key);
+        DatabaseReference newRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(newrollno);
+
+        DatabaseReference oldRefGroup = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(key).child(GROUPS).child(group.toUpperCase());
+
+
+        oldRefGroup.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    Object data =snapshot.getValue();
+                    oldRefGroup.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            newRef.child(GROUPS).child(group.toUpperCase()).setValue(data);
+                            newRef.child(NAME).setValue(name.toUpperCase());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
+
+
 
 }
 

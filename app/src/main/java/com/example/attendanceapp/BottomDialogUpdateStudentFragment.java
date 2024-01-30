@@ -141,6 +141,8 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
         DataBaseHelper db=new DataBaseHelper(getContext());
         db.updateStudentData(key,rollno,name,group,"0","0");
         Toast.makeText(getContext(), "Data of "+key+" updated successfully", Toast.LENGTH_SHORT).show();
+
+       new DataBaseHelper(getContext()).updateStudentsRollNoAttendanceFireBase(key,rollno,group.toUpperCase(),name.toUpperCase());
     }
     int findIndexOfArray(String group) {
 

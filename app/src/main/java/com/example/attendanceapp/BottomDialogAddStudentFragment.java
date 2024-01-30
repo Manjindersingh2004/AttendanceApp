@@ -117,6 +117,9 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
         db.addNewStudents(rollno,name,group,atendlec,totallec,percentage);
         Toast.makeText(getContext(), name+" is sucessfully added", Toast.LENGTH_SHORT).show();
 
+
+        new DataBaseHelper(getContext()).addStudentAttendanceFireBase(rollno,name,group);
+
     }
 
     private int checkRollnoExists(String rollno) {

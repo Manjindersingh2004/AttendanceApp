@@ -150,6 +150,8 @@ OnItemClickListener listener;
 
     void removeStudentFromTable(String rollno,String group){
         new DataBaseHelper(context).removeStudent(rollno,group);
+
+        new DataBaseHelper(context).removeStudentAttendanceFirebase(rollno,group);
     }
 
     void putValuesInArrayList() {
