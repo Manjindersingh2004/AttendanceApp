@@ -87,20 +87,25 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newGroup=Edtgroup.getText().toString();
-                int exist=checkGroupExists(newGroup);
-                if(newGroup.isEmpty()){
-                    Edtgroup.setError("Please Enter Group");
-                }
-                else if (exist==1) {
-                    Edtgroup.setError(" Already Exists");
-                }
-                else if(!newGroup.isEmpty() && exist==0){
-                    renameGroup(group,newGroup);
-                    Toast.makeText(getContext(), group+" Renamed Sucessfully", Toast.LENGTH_SHORT).show();
+                if(NetworkUtils.isNetworkAvailable(getContext())){
+                    newGroup=Edtgroup.getText().toString();
+                    int exist=checkGroupExists(newGroup);
+                    if(newGroup.isEmpty()){
+                        Edtgroup.setError("Please Enter Group");
+                    }
+                    else if (exist==1) {
+                        Edtgroup.setError(" Already Exists");
+                    }
+                    else if(!newGroup.isEmpty() && exist==0){
+                        renameGroup(group,newGroup);
+                        Toast.makeText(getContext(), group+" Renamed Sucessfully", Toast.LENGTH_SHORT).show();
 
 
-                    dismiss();
+                        dismiss();
+                    }
+                }
+                else{
+                    Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -109,12 +114,13 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
     }
 
     void renameGroup(String key,String group){
-        DataBaseHelper db= new DataBaseHelper(getContext());
-        db.renameGroup(key,group);
+           DataBaseHelper db= new DataBaseHelper(getContext());
+           db.renameGroup(key,group);
 
 
 
-        new DataBaseHelper(getContext()).renameGroupAttendnceInFireBase(key,group);
+           new DataBaseHelper(getContext()).renameGroupAttendnceInFireBase(key,group);
+
     }
     private int checkGroupExists(String group) {
         DataBaseHelper db=new DataBaseHelper(getContext());

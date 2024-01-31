@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -125,23 +126,29 @@ public class AdapterGroupAverage extends RecyclerView.Adapter<AdapterGroupAverag
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                if(item.getItemId()==id1){
-                   removeGroupFromTable(group_list.get(pos));
-                    group_list.remove(pos);
-                    notifyItemRemoved(pos);
-                    if (listener != null) {
-                        listener.onItemClick();
-                    }
+               if(NetworkUtils.isNetworkAvailable(context)){
+                   if(item.getItemId()==id1){
+                       removeGroupFromTable(group_list.get(pos));
+                       group_list.remove(pos);
+                       notifyItemRemoved(pos);
+                       if (listener != null) {
+                           listener.onItemClick();
+                       }
 
-                    return true;
-                } else if (item.getItemId()==id2) {
-                    BottomDialogRenameGroupFragment fg=BottomDialogRenameGroupFragment.newInstance(group_list.get(pos));
-                    fg.show(fm,fg.getTag());
-                    return true;
-                }
-                else{
-                    return true;
-                }
+                       return true;
+                   } else if (item.getItemId()==id2) {
+                       BottomDialogRenameGroupFragment fg=BottomDialogRenameGroupFragment.newInstance(group_list.get(pos));
+                       fg.show(fm,fg.getTag());
+                       return true;
+                   }
+                   else{
+                       return true;
+                   }
+               }
+               else{
+                   Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show();
+               }
+               return true;
             }
         });
 

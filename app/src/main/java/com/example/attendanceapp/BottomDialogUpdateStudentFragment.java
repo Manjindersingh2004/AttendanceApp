@@ -113,24 +113,29 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rollno=Edtrollno.getText().toString();
-                name=Edtname.getText().toString();
-                int exist=0;
-                if(!rollno.isEmpty() && !rollno.equals(key))
-                    exist=checkRollnoExists(rollno,group);
-                if(name.isEmpty()){
-                    Edtname.setError("cannot be empty");
-                }
-                if(rollno.isEmpty()){
-                    Edtrollno.setError("cannot be empty");
-                }
-                if(exist==1){
-                    Edtrollno.setError("Roll no Already Exist");
-                }
-                else if(exist==0 && !name.isEmpty() && !rollno.isEmpty()){
-                    updateDataInTable(key,rollno,name,group);
-                    dismiss();
-                }
+               if(NetworkUtils.isNetworkAvailable(getContext())){
+                   rollno=Edtrollno.getText().toString();
+                   name=Edtname.getText().toString();
+                   int exist=0;
+                   if(!rollno.isEmpty() && !rollno.equals(key))
+                       exist=checkRollnoExists(rollno,group);
+                   if(name.isEmpty()){
+                       Edtname.setError("cannot be empty");
+                   }
+                   if(rollno.isEmpty()){
+                       Edtrollno.setError("cannot be empty");
+                   }
+                   if(exist==1){
+                       Edtrollno.setError("Roll no Already Exist");
+                   }
+                   else if(exist==0 && !name.isEmpty() && !rollno.isEmpty()){
+                       updateDataInTable(key,rollno,name,group);
+                       dismiss();
+                   }
+               }
+               else{
+                   Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+               }
 
             }
         });

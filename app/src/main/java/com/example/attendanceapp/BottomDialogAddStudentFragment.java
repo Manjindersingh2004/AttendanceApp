@@ -83,42 +83,47 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
         addStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name,rollno;
-                int exists=0;
-                name=Edtname.getText().toString();
-                rollno=Edtrollno.getText().toString();
-                if(!rollno.isEmpty())
-                exists=checkRollnoExists(rollno);
-                if(name.isEmpty())
-                {
-                    Edtname.setError("Name cannot be empty");
-                }
-                if(rollno.isEmpty()){
-                    Edtrollno.setError("Roll no cannot be empty");
-                }
-                if(exists==1){
-                    Edtrollno.setError("Roll number Already Exists");
-                }
-                else if(!name.isEmpty() && !rollno.isEmpty() && exists==0){
-                    addStudentDataToTable(rollno,name,group);
-                    dismiss();
-                }
+               if(NetworkUtils.isNetworkAvailable(getContext())){
+                   String name,rollno;
+                   int exists=0;
+                   name=Edtname.getText().toString();
+                   rollno=Edtrollno.getText().toString();
+                   if(!rollno.isEmpty())
+                       exists=checkRollnoExists(rollno);
+                   if(name.isEmpty())
+                   {
+                       Edtname.setError("Name cannot be empty");
+                   }
+                   if(rollno.isEmpty()){
+                       Edtrollno.setError("Roll no cannot be empty");
+                   }
+                   if(exists==1){
+                       Edtrollno.setError("Roll number Already Exists");
+                   }
+                   else if(!name.isEmpty() && !rollno.isEmpty() && exists==0){
+                       addStudentDataToTable(rollno,name,group);
+                       dismiss();
+                   }
+               }
+               else{
+                   Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+               }
             }
         });
         // Inflate the layout for this fragment
         return view;    }
 
     void addStudentDataToTable(String rollno,String name,String group){
-        DataBaseHelper db=new DataBaseHelper(getContext());
-        String atendlec,totallec,percentage;
-        atendlec="0";
-        totallec="0";
-        percentage="0";
-        db.addNewStudents(rollno,name,group,atendlec,totallec,percentage);
-        Toast.makeText(getContext(), name+" is sucessfully added", Toast.LENGTH_SHORT).show();
+           DataBaseHelper db=new DataBaseHelper(getContext());
+           String atendlec,totallec,percentage;
+           atendlec="0";
+           totallec="0";
+           percentage="0";
+           db.addNewStudents(rollno,name,group,atendlec,totallec,percentage);
+           Toast.makeText(getContext(), name+" is sucessfully added", Toast.LENGTH_SHORT).show();
 
 
-        new DataBaseHelper(getContext()).addStudentAttendanceFireBase(rollno,name,group);
+           new DataBaseHelper(getContext()).addStudentAttendanceFireBase(rollno,name,group);
 
     }
 

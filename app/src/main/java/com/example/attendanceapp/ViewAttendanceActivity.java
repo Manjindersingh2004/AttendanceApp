@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -104,26 +105,36 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
         takeAttendanceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(flag.equals("1")){
-                    AdapterTakeAttendance adapter = (AdapterTakeAttendance) recyclerView.getAdapter();
-                    if (adapter != null) {
-                        adapter.updateAttendance(date); // Call the function
-                    }
-                }
-               else if(flag.equals("2")) {
-                    AdapterReTakeAttendance adapter = (AdapterReTakeAttendance) recyclerView.getAdapter();
-                    if (adapter != null) {
-                        adapter.updateAttendance(date); // Call the function
-                    }
-                }
+               if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                   if(flag.equals("1")){
+                       AdapterTakeAttendance adapter = (AdapterTakeAttendance) recyclerView.getAdapter();
+                       if (adapter != null) {
+                           adapter.updateAttendance(date); // Call the function
+                       }
+                   }
+                   else if(flag.equals("2")) {
+                       AdapterReTakeAttendance adapter = (AdapterReTakeAttendance) recyclerView.getAdapter();
+                       if (adapter != null) {
+                           adapter.updateAttendance(date); // Call the function
+                       }
+                   }
+               }
+               else{
+                   Toast.makeText(ViewAttendanceActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+               }
             }
         });
 
         addStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BottomDialogAddStudentFragment fg=BottomDialogAddStudentFragment.newInstance(key);
-                fg.show(getSupportFragmentManager(),fg.getTag());
+               if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                   BottomDialogAddStudentFragment fg=BottomDialogAddStudentFragment.newInstance(key);
+                   fg.show(getSupportFragmentManager(),fg.getTag());
+               }
+               else {
+                   Toast.makeText(ViewAttendanceActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+               }
             }
         });
 

@@ -169,24 +169,28 @@ public class BottomSheetDialogFragmentDatePicker extends BottomSheetDialogFragme
     }
 
     void onclickBtnForDeleteAttendance(){
-        int flag=checkDateExixst(date,group);
-        if(date.length()>0 && flag==1 && validity==1){
-            DataBaseHelper db=new DataBaseHelper(getContext());
-            arrayList=db.fetchGroupData(group);
-            ArrayList<String> attendance=db.getAttendanceListFromAttendanceTableByDate(date,group,arrayList);
-            db.decrementAttendanceStudentTable(arrayList,attendance);
-            db.deleteRowByDateInAttendanceTable(date,group);
-            Toast.makeText(getContext(), "Attendance Deleted", Toast.LENGTH_SHORT).show();
+       if(NetworkUtils.isNetworkAvailable(getContext())){
+           int flag=checkDateExixst(date,group);
+           if(date.length()>0 && flag==1 && validity==1){
+               DataBaseHelper db=new DataBaseHelper(getContext());
+               arrayList=db.fetchGroupData(group);
+               ArrayList<String> attendance=db.getAttendanceListFromAttendanceTableByDate(date,group,arrayList);
+               db.decrementAttendanceStudentTable(arrayList,attendance);
+               db.deleteRowByDateInAttendanceTable(date,group);
+               Toast.makeText(getContext(), "Attendance Deleted", Toast.LENGTH_SHORT).show();
 
-            new DataBaseHelper(getContext()).removeAttendanceDateIntoFirebase(group,date);
+               new DataBaseHelper(getContext()).removeAttendanceDateIntoFirebase(group,date);
 
-            dismiss();
-        } else if (flag==0) {
-            Toast.makeText(getContext(), "Attendance Not Exists", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Toast.makeText(getContext(), "Enter Valid Date", Toast.LENGTH_SHORT).show();
-        }
+               dismiss();
+           } else if (flag==0) {
+               Toast.makeText(getContext(), "Attendance Not Exists", Toast.LENGTH_SHORT).show();
+           }
+           else{
+               Toast.makeText(getContext(), "Enter Valid Date", Toast.LENGTH_SHORT).show();
+           }
+       }else {
+           Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+       }
     }
 
     @Override

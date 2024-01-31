@@ -50,8 +50,13 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         manageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BottomDialogAddGroupFragment fg= new BottomDialogAddGroupFragment();
-                fg.show(getSupportFragmentManager(),fg.getTag());
+               if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                   BottomDialogAddGroupFragment fg= new BottomDialogAddGroupFragment();
+                   fg.show(getSupportFragmentManager(),fg.getTag());
+               }
+               else{
+                   Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+               }
 
             }
         });
@@ -87,14 +92,19 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         takeAttendanceCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int flag=checkDataExists("2"," ");
-                if(flag==1){
-                    BottomSheetFragment fg=BottomSheetFragment.newInstance("1");//
-                    //adapterGroupSelection=new AdapterGroupSelection(fg);
-                    fg.show(getSupportFragmentManager(),fg.getTag());
+                if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                    int flag=checkDataExists("2"," ");
+                    if(flag==1){
+                        BottomSheetFragment fg=BottomSheetFragment.newInstance("1");//
+                        //adapterGroupSelection=new AdapterGroupSelection(fg);
+                        fg.show(getSupportFragmentManager(),fg.getTag());
+                    }
+                    else{
+                        Toast.makeText(MainActivity.this, "Please Add Students", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
-                    Toast.makeText(MainActivity.this, "Please Add Students", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -102,25 +112,36 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         resetAttendance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                    addItemToGroupList();
+                    if(arrayList.size()>0){
+                        BottomSheetFragment fg=BottomSheetFragment.newInstance("2");//
+                        fg.show(getSupportFragmentManager(),fg.getTag());
+                        //openDialogForRemoveGroup();
+                    }
+                    else
+                        Toast.makeText(getApplicationContext(), "No Groups Found", Toast.LENGTH_SHORT).show();
 
-                addItemToGroupList();
-                if(arrayList.size()>0){
-                    BottomSheetFragment fg=BottomSheetFragment.newInstance("2");//
-                    fg.show(getSupportFragmentManager(),fg.getTag());
-                    //openDialogForRemoveGroup();
                 }
-                else
-                    Toast.makeText(getApplicationContext(), "No Groups Found", Toast.LENGTH_SHORT).show();
+                else{
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         modifyAttendance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addItemToGroupList();
-                if(arrayList.size()>0){
-                    BottomSheetFragment fg=BottomSheetFragment.newInstance("4");//
-                    fg.show(getSupportFragmentManager(),fg.getTag());
+                if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                    addItemToGroupList();
+                    if(arrayList.size()>0){
+                        BottomSheetFragment fg=BottomSheetFragment.newInstance("4");//
+                        fg.show(getSupportFragmentManager(),fg.getTag());
+                    }
+
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -128,12 +149,16 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         deleteAttendance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BottomSheetFragment fg=BottomSheetFragment.newInstance("3");
-                fg.show(getSupportFragmentManager(),fg.getTag());
+                if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                    BottomSheetFragment fg=BottomSheetFragment.newInstance("3");
+                    fg.show(getSupportFragmentManager(),fg.getTag());
+
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-
     }
 
     Integer checkDataExists(String table,String group){

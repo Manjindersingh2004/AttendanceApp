@@ -122,26 +122,32 @@ OnItemClickListener listener;
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-               if(item.getItemId()==id1){
-                   removeStudentFromTable(rollno,arraylist.get(0).GROUP);
-                   arraylist.remove(pos);
-                   notifyItemRemoved(pos);
-                   if(listener!=null){
-                       listener.onItemClick();
-                   }
-                   return true;
-               } else if (item.getItemId()==id2) {
-                   BottomDialogUpdateStudentFragment fg=BottomDialogUpdateStudentFragment.newInstance(rollno,arraylist.get(pos).ROLL_NO,arraylist.get(pos).NAME,arraylist.get(pos).GROUP);
-                   fg.show(fm, fg.getTag());
-                   if(listener!=null){
-                       listener.onItemClick();
-                   }
-                   //putValuesInArrayList();
-                   return true;
-               }
-               else{
-                   return true;
-               }
+                if(NetworkUtils.isNetworkAvailable(context)){
+                    if(item.getItemId()==id1){
+                        removeStudentFromTable(rollno,arraylist.get(0).GROUP);
+                        arraylist.remove(pos);
+                        notifyItemRemoved(pos);
+                        if(listener!=null){
+                            listener.onItemClick();
+                        }
+                        return true;
+                    } else if (item.getItemId()==id2) {
+                        BottomDialogUpdateStudentFragment fg=BottomDialogUpdateStudentFragment.newInstance(rollno,arraylist.get(pos).ROLL_NO,arraylist.get(pos).NAME,arraylist.get(pos).GROUP);
+                        fg.show(fm, fg.getTag());
+                        if(listener!=null){
+                            listener.onItemClick();
+                        }
+                        //putValuesInArrayList();
+                        return true;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                else{
+                    Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
+              return true;
             }
         });
 
@@ -149,9 +155,13 @@ OnItemClickListener listener;
     }
 
     void removeStudentFromTable(String rollno,String group){
+
+        int count=new DataBaseHelper(context).countRollnumbers(rollno);
+        new DataBaseHelper(context).removeStudentAttendanceFirebase(rollno,group,count);
+
         new DataBaseHelper(context).removeStudent(rollno,group);
 
-        new DataBaseHelper(context).removeStudentAttendanceFirebase(rollno,group);
+
     }
 
     void putValuesInArrayList() {

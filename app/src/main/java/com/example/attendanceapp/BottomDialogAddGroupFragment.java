@@ -77,18 +77,23 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               group=removeSpecialCharacters(Edtgroup.getText().toString().toUpperCase());
-                int exist=checkGroupExists(group);
-                if(group.isEmpty()){
-                    Edtgroup.setError("Please Enter Group");
-                }  else if (exist==1) {
-                    Edtgroup.setError("Group Already Exixts");
-                }
-                else if(!group.isEmpty() && exist==0){
-                    addNewGroup(group);
-                    Toast.makeText(getContext(), group+" is Added succesfully", Toast.LENGTH_SHORT).show();
-                    dismiss();
-                }
+              if(NetworkUtils.isNetworkAvailable(getContext())){
+                  group=removeSpecialCharacters(Edtgroup.getText().toString().toUpperCase());
+                  int exist=checkGroupExists(group);
+                  if(group.isEmpty()){
+                      Edtgroup.setError("Please Enter Group");
+                  }  else if (exist==1) {
+                      Edtgroup.setError("Group Already Exixts");
+                  }
+                  else if(!group.isEmpty() && exist==0){
+                      addNewGroup(group);
+                      Toast.makeText(getContext(), group+" is Added succesfully", Toast.LENGTH_SHORT).show();
+                      dismiss();
+                  }
+              }
+              else{
+                  Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+              }
             }
         });
         // Inflate the layout for this fragment

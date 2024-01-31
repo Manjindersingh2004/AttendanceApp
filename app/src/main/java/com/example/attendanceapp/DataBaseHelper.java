@@ -945,7 +945,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
 
-    void removeGroupIntoFirebase(String group) {
+    void resetAttendanceIntoFirebase(String group) {
 
         SQLiteDatabase db=this.getReadableDatabase();
         String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+group.toUpperCase()+"'";
@@ -953,6 +953,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(c.moveToFirst()){
             do{
                 FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).child(GROUPS).child(group).removeValue();
+            }
+            while(c.moveToNext());
+        }
+    }
+
+
+    void removeGroupIntoFirebase(String group) {
+
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+group.toUpperCase()+"'";
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+            do{
+                int count=countGroupsofRollnumbers(c.getString(0),group.toUpperCase());
+                if(count==1){
+                    FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).removeValue();
+                }
+                else{
+                    FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).child(GROUPS).child(group).removeValue();
+                }
             }
             while(c.moveToNext());
         }
@@ -1086,19 +1106,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         attendanceRef.child(GROUPS).child(group.toUpperCase()).child(ATTENDANCE).setValue(null);
     }
 
-    void removeStudentAttendanceFirebase(String rollno,String group){
+    void removeStudentAttendanceFirebase(String rollno,String group,int count){
         DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno);
 
-        SQLiteDatabase db=this.getReadableDatabase();
-        String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE;//because local database is updated already
-        Cursor c=db.rawQuery(quary,null);
-        if(c.moveToFirst()){
-           if(c.moveToFirst()){
-               attendanceRef.child(GROUPS).child(group.toUpperCase()).removeValue();
-           }
-           else{
-               attendanceRef.removeValue();
-           }
+        if(count==1){
+            attendanceRef.removeValue();
+        }
+        else{
+            attendanceRef.child(GROUPS).child(group.toUpperCase()).removeValue();
         }
 
     }
@@ -1135,6 +1150,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
 
+    int countRollnumbers(String rollno){
+        int count=0;
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select count("+COL_ROLLNO+") from "+STUDENT_TABLE+" where "+COL_ROLLNO+"="+rollno;//because local database is updated already
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+            count=c.getInt(0);
+        }
+        return count;
+    }
+
+
+    int countGroupsofRollnumbers(String rollno,String group){
+        int count=0;
+        SQLiteDatabase db=this.getReadableDatabase();
+        String quary="select count("+COL_GROUP+") from "+STUDENT_TABLE+" where "+COL_ROLLNO+"="+rollno;//because local database is updated already
+        Cursor c=db.rawQuery(quary,null);
+        if(c.moveToFirst()){
+            count=c.getInt(0);
+        }
+        return count;
+    }
 
 
 }
