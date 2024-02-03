@@ -681,6 +681,59 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return date;
     }
 
+    ArrayList<String> getDatesListNumbred(String group){
+        String Table=getAtendanceTableName(group);
+        ArrayList<String> date=new ArrayList<>();
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery("SELECT "+COL_DATE+" FROM "+Table+" ORDER BY "+COL_DATE,null,null);
+        if(c.moveToFirst()){
+            do {
+                String inputDate = c.getString(0); // Replace with your input date
+
+// Split the input date into year, month, and day parts
+//                String[] parts = inputDate.split("-");
+//                if (parts.length == 3) {
+//                    String year = parts[0];
+//                    String month = parts[1];
+//                    String day = parts[2];
+//                    int month_num=Integer.parseInt(month);
+//                    switch (month_num){
+//                        case 1:month=" Jan,";
+//                            break;
+//                        case 2:month=" Feb,";
+//                            break;
+//                        case 3:month=" Mar,";
+//                            break;
+//                        case 4:month=" Apr,";
+//                            break;
+//                        case 5:month=" May,";
+//                            break;
+//                        case 6:month=" June";
+//                            break;
+//                        case 7:month=" Jul,";
+//                            break;
+//                        case 8:month=" Aug,";
+//                            break;
+//                        case 9:month=" Sep,";
+//                            break;
+//                        case 10:month=" Oct,";
+//                            break;
+//                        case 11:month=" Nov,";
+//                            break;
+//                        case 12:month=" Dec,";
+//                            break;
+//                        default: month=" Invalid,";
+//                    }
+//                    // Reformat the date in "DD-MM-YYYY" format
+//                    String formattedDate = day + month +  year;
+                date.add(inputDate);
+//            }
+
+            }while (c.moveToNext());
+        }
+        return date;
+    }
+
     ArrayList<String> getAttendanceAttendanceTAbleOfRollNo(String group,String rollno){
         String Table=getAtendanceTableName(group);
         String Column=getRollnoColumnNameAtendanceTable(rollno);
@@ -879,7 +932,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
         DataBaseHelper db=new DataBaseHelper(context);
-        dates=db.getDatesList(group);
+        dates=db.getDatesListNumbred(group);
         arrayList=db.fetchGroupData(group);
         for(int i=0;i<arrayList.size();i++){
             String rollno=arrayList.get(i).ROLL_NO;

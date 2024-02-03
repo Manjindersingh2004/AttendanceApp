@@ -86,8 +86,8 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
                if(NetworkUtils.isNetworkAvailable(getContext())){
                    String name,rollno;
                    int exists=0;
-                   name=Edtname.getText().toString();
-                   rollno=Edtrollno.getText().toString();
+                   name=Edtname.getText().toString().trim().toUpperCase();
+                   rollno=Edtrollno.getText().toString().trim();
                    if(!rollno.isEmpty())
                        exists=checkRollnoExists(rollno);
                    if(name.isEmpty())

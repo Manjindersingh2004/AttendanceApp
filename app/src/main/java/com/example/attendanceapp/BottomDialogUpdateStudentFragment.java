@@ -114,8 +114,8 @@ public class BottomDialogUpdateStudentFragment extends BottomSheetDialogFragment
             @Override
             public void onClick(View v) {
                if(NetworkUtils.isNetworkAvailable(getContext())){
-                   rollno=Edtrollno.getText().toString();
-                   name=Edtname.getText().toString();
+                   rollno=Edtrollno.getText().toString().trim();
+                   name=Edtname.getText().toString().toUpperCase().trim();
                    int exist=0;
                    if(!rollno.isEmpty() && !rollno.equals(key))
                        exist=checkRollnoExists(rollno,group);

@@ -78,7 +78,7 @@ public class BottomDialogAddGroupFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
               if(NetworkUtils.isNetworkAvailable(getContext())){
-                  group=removeSpecialCharacters(Edtgroup.getText().toString().toUpperCase());
+                  group=removeSpecialCharacters(Edtgroup.getText().toString().toUpperCase()).trim();
                   int exist=checkGroupExists(group);
                   if(group.isEmpty()){
                       Edtgroup.setError("Please Enter Group");

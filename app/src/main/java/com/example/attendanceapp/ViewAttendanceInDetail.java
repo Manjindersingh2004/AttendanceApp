@@ -441,9 +441,6 @@ public class ViewAttendanceInDetail extends AppCompatActivity {
             // Handle the exception
         }
     }
-
-
-
     TableLayout getTableLayout(){
         return tableLayout;
     }

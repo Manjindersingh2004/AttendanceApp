@@ -88,7 +88,7 @@ public class BottomDialogRenameGroupFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
                 if(NetworkUtils.isNetworkAvailable(getContext())){
-                    newGroup=Edtgroup.getText().toString();
+                    newGroup=Edtgroup.getText().toString().toUpperCase().trim();
                     int exist=checkGroupExists(newGroup);
                     if(newGroup.isEmpty()){
                         Edtgroup.setError("Please Enter Group");
