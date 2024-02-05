@@ -16,17 +16,19 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSelection.ViewHolder> {
+public class AdapterGroupSelectionImportStudents extends  RecyclerView.Adapter<AdapterGroupSelectionImportStudents.ViewHolder> {
     Context context;
     ArrayList<String> group_list = new ArrayList<>();
     String flag;
-    BottomSheetFragment bottomSheetFragment;
+    BottomSheetFragmentimportStudents bottomSheetFragment;
+    OnImportStudents callback;
 
-    AdapterGroupSelection(Context context, ArrayList<String> group_list,String flag,BottomSheetFragment bottomSheetFragment ) {
+    AdapterGroupSelectionImportStudents(Context context, ArrayList<String> group_list,String flag,BottomSheetFragmentimportStudents bottomSheetFragment ) {
         this.context = context;
         this.group_list = group_list;
         this.flag=flag;
         this.bottomSheetFragment=bottomSheetFragment;
+        this.callback=(OnImportStudents) context;
     }
 
 
@@ -42,14 +44,14 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
 
     @NonNull
     @Override
-    public AdapterGroupSelection.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterGroupSelectionImportStudents.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view=LayoutInflater.from(context).inflate(R.layout.recycler_view_group_layout,parent,false);
         ViewHolder viewHolder=new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdapterGroupSelection.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterGroupSelectionImportStudents.ViewHolder holder, int position) {
         holder.text.setText(group_list.get(position).toString());
         holder.card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +106,15 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
             i.putExtra("group",group);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
-        }else{
+        } else if (String.valueOf(flag.charAt(0)).equals("8")) {
+            // import students
+            String key="";
+            String[] parts = flag.split("-");
+            if (parts.length == 2) {
+                key = parts[1];
+            }
+            importStudents(group,key);
+        } else{
             Intent i=new Intent(context, ViewAttendanceActivity.class);
             i.putExtra("key",group);
             i.putExtra("flag",flag);
@@ -112,6 +122,30 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
         }
 
     }
+
+    private void importStudents(String group,String key) {
+        ArrayList<StudentDataModel> arrayList=new ArrayList<>();
+        arrayList=new DataBaseHelper(context.getApplicationContext()).fetchGroupData(group);//to get group student data
+        if(arrayList.isEmpty()){
+            Toast.makeText(context, "No Students Available", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            for(StudentDataModel i:arrayList){
+                String name= i.NAME;
+                String rollno= i.ROLL_NO;
+                String atendlec,totallec,percentage;
+                atendlec="0";
+                totallec="0";
+                percentage="0";
+                new DataBaseHelper(context.getApplicationContext()).addNewStudents(rollno,name,key,atendlec,totallec,percentage);//key =new group
+                new DataBaseHelper(context).addStudentAttendanceFireBase(rollno,name,key);
+            }
+            if(callback!=null){
+                callback.onImportStudents();
+            }
+        }
+    }
+
 
     @Override
     public int getItemCount() {
@@ -123,6 +157,8 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
         return db.checkDataExists(table,group);
     }
 
+    interface OnImportStudents{
+        void onImportStudents();
+    }
+
 }
-
-

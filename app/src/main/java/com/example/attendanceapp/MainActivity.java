@@ -138,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
                         BottomSheetFragment fg=BottomSheetFragment.newInstance("4");//
                         fg.show(getSupportFragmentManager(),fg.getTag());
                     }
+                    else{
+                        Toast.makeText(MainActivity.this, "No Groups available", Toast.LENGTH_SHORT).show();
+                    }
 
                 }
                 else{

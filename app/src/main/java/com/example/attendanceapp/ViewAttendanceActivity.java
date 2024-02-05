@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -23,10 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ViewAttendanceActivity extends AppCompatActivity implements AdapterViewAttendance.OnItemClickListener{
+public class ViewAttendanceActivity extends AppCompatActivity implements AdapterViewAttendance.OnItemClickListener, AdapterGroupSelectionImportStudents.OnImportStudents {
 
     RecyclerView recyclerView;
     AppCompatButton addStudent;
+    Button importStudents;
     LinearLayout nothingLayout;
     TextView Heading;
     String key,flag,date;// group name
@@ -35,6 +37,7 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
     AdapterTakeAttendance adapterTakeAttendance;
     AdapterReTakeAttendance adapterReTakeAttendance;
     AppCompatButton backButton,takeAttendanceButton,viewDetailAttendance;
+    ArrayList<String> group_list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,7 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
         addStudent=findViewById(R.id.floating_button_add_Student);
         nothingLayout=findViewById(R.id.nothing_is_here_linear_layout_view_attendance);
         addStudent.setVisibility(View.GONE);
+        importStudents=findViewById(R.id.importStudents_Btn);
         putValuesInArrayList();
         if(flag.equals("1")){
             // arrayList.add(new StudentDataModel(null,null,null,null,null,null));
@@ -138,6 +142,24 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
             }
         });
 
+        importStudents.setOnClickListener(v -> {
+            if(NetworkUtils.isNetworkAvailable(getApplicationContext())){
+                importStudents(key.toUpperCase().trim());
+            }else{
+                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void importStudents(String key) {
+        addItemToGroupList();
+        if(group_list.size()>0){
+            BottomSheetFragmentimportStudents fg=BottomSheetFragmentimportStudents.newInstance("8-"+key);//
+            fg.show(getSupportFragmentManager(),fg.getTag());
+        }else{
+            Toast.makeText(this, "No Groups available", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -162,9 +184,11 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
             if(flag==1){
                 nothingLayout.setVisibility(View.GONE);
                 viewDetailAttendance.setVisibility(View.VISIBLE);
+                importStudents.setVisibility(View.GONE);
             } else{
                 nothingLayout.setVisibility(View.VISIBLE);
                 viewDetailAttendance.setVisibility(View.GONE);
+                importStudents.setVisibility(View.VISIBLE);
             }
 
         }
@@ -183,5 +207,17 @@ public class ViewAttendanceActivity extends AppCompatActivity implements Adapter
     }
 
 
+    void addItemToGroupList(){
+        group_list=new ArrayList<>();
+        DataBaseHelper db= new DataBaseHelper(this);
+        group_list=db.fetchGroupTable();
+        group_list.remove(key);
+    }
 
+
+    @Override
+    public void onImportStudents() {
+        getAdapter().putValuesInArrayList();
+        onResume();
+    }
 }
