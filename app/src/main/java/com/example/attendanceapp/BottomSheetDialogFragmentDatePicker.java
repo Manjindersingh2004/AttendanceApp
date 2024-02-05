@@ -172,14 +172,19 @@ public class BottomSheetDialogFragmentDatePicker extends BottomSheetDialogFragme
        if(NetworkUtils.isNetworkAvailable(getContext())){
            int flag=checkDateExixst(date,group);
            if(date.length()>0 && flag==1 && validity==1){
-               DataBaseHelper db=new DataBaseHelper(getContext());
-               arrayList=db.fetchGroupData(group);
-               ArrayList<String> attendance=db.getAttendanceListFromAttendanceTableByDate(date,group,arrayList);
-               db.decrementAttendanceStudentTable(arrayList,attendance);
-               db.deleteRowByDateInAttendanceTable(date,group);
-               Toast.makeText(getContext(), "Attendance Deleted", Toast.LENGTH_SHORT).show();
-
-               new DataBaseHelper(getContext()).removeAttendanceDateIntoFirebase(group,date);
+               //here is 5 lines data to toast
+               new DataBaseHelper(getContext()).removeAttendanceDateIntoFirebase(group.toUpperCase(), date.trim(), new DataBaseHelper.OnAttendanceDelete() {
+                   @Override
+                   public void onAttendanceDelete() {
+                       DataBaseHelper db=new DataBaseHelper(getContext());
+                       arrayList=db.fetchGroupData(group);
+                       ArrayList<String> attendance=db.getAttendanceListFromAttendanceTableByDate(date,group,arrayList);
+                       db.decrementAttendanceStudentTable(arrayList,attendance);
+                       db.deleteRowByDateInAttendanceTable(date,group);
+                       Toast.makeText(getContext(), "Attendance Deleted", Toast.LENGTH_SHORT).show();
+                       new DataBaseHelper(getContext()).insertAttendanceOnline(group.toUpperCase());
+                   }
+               });
 
                dismiss();
            } else if (flag==0) {

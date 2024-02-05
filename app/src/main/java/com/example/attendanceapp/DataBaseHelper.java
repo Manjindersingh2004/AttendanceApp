@@ -7,10 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
-import android.view.Gravity;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,11 +22,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import org.apache.commons.codec.language.bm.Languages;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +31,6 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -998,18 +990,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
 
-    void resetAttendanceIntoFirebase(String group) {
+    void resetAttendanceIntoFirebase(String group,OnresetAttendance callback) {
 
         SQLiteDatabase db=this.getReadableDatabase();
         String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+group.toUpperCase()+"'";
         Cursor c=db.rawQuery(quary,null);
         if(c.moveToFirst()){
             do{
-                FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).child(GROUPS).child(group).removeValue();
+                FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).child(GROUPS).child(group).child(ATTENDANCE).removeValue();
+                FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(c.getString(0)).child(GROUPS).child(group).child(PERCENTAGE).setValue("0");
             }
             while(c.moveToNext());
+            callback.onResetAttendance();
         }
     }
+    interface OnresetAttendance{
+        default void onResetAttendance(){
+
+        }
+    }
+
 
 
     void removeGroupIntoFirebase(String group) {
@@ -1031,55 +1031,55 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void removeAttendanceDateIntoFirebase(String group,String date) {
-        String[] parts = date.split("-");
-        if (parts.length == 3) {
-            String year = parts[0];
-            String month = parts[1];
-            String day = parts[2];
-            int month_num = Integer.parseInt(month);
-            switch (month_num) {
-                case 1:
-                    month = " Jan,";
-                    break;
-                case 2:
-                    month = " Feb,";
-                    break;
-                case 3:
-                    month = " Mar,";
-                    break;
-                case 4:
-                    month = " Apr,";
-                    break;
-                case 5:
-                    month = " May,";
-                    break;
-                case 6:
-                    month = " June";
-                    break;
-                case 7:
-                    month = " Jul,";
-                    break;
-                case 8:
-                    month = " Aug,";
-                    break;
-                case 9:
-                    month = " Sep,";
-                    break;
-                case 10:
-                    month = " Oct,";
-                    break;
-                case 11:
-                    month = " Nov,";
-                    break;
-                case 12:
-                    month = " Dec,";
-                    break;
-                default:
-                    month = " Invalid,";
-            }
-            date = day + month +  year;
-        }
+    void removeAttendanceDateIntoFirebase(String group,String date,OnAttendanceDelete callback) {
+//        String[] parts = date.split("-");
+//        if (parts.length == 3) {
+//            String year = parts[0];
+//            String month = parts[1];
+//            String day = parts[2];
+//            int month_num = Integer.parseInt(month);
+//            switch (month_num) {
+//                case 1:
+//                    month = " Jan,";
+//                    break;
+//                case 2:
+//                    month = " Feb,";
+//                    break;
+//                case 3:
+//                    month = " Mar,";
+//                    break;
+//                case 4:
+//                    month = " Apr,";
+//                    break;
+//                case 5:
+//                    month = " May,";
+//                    break;
+//                case 6:
+//                    month = " June";
+//                    break;
+//                case 7:
+//                    month = " Jul,";
+//                    break;
+//                case 8:
+//                    month = " Aug,";
+//                    break;
+//                case 9:
+//                    month = " Sep,";
+//                    break;
+//                case 10:
+//                    month = " Oct,";
+//                    break;
+//                case 11:
+//                    month = " Nov,";
+//                    break;
+//                case 12:
+//                    month = " Dec,";
+//                    break;
+//                default:
+//                    month = " Invalid,";
+//            }
+//            date = day + month +  year;
+//        }
         String rollno;
         SQLiteDatabase db=this.getReadableDatabase();
         String quary="select "+COL_ROLLNO+" from "+STUDENT_TABLE+" where "+COL_GROUP+"='"+group.toUpperCase()+"'";
@@ -1088,16 +1088,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             do{
                 rollno=c.getString(0);
                 FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno).child(GROUPS).child(group).child(ATTENDANCE).child(date).removeValue();
-
-                quary="SELECT "+COL_PERCENTAGE+" FROM "+ STUDENT_TABLE +" WHERE "+COL_GROUP+"='"+group.toUpperCase()+"' and "+COL_ROLLNO+"="+rollno;
-                Cursor c2=db.rawQuery(quary,null);
-                if(c2.moveToFirst()){
-                    FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno).child(GROUPS).child(group).child(PERCENTAGE).setValue(c2.getString(0));
-                }
-
             }
             while(c.moveToNext());
+            callback.onAttendanceDelete();
         }
+    }
+
+    interface OnAttendanceDelete{
+        default void onAttendanceDelete(){
+        }
+
     }
 
     void renameGroupAttendnceInFireBase(String key,String newgroup){

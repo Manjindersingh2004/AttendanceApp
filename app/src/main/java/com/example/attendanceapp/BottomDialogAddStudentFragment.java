@@ -102,6 +102,7 @@ public class BottomDialogAddStudentFragment extends BottomSheetDialogFragment {
                    }
                    else if(!name.isEmpty() && !rollno.isEmpty() && exists==0){
                        addStudentDataToTable(rollno,name,group);
+                       new DataBaseHelper(getContext()).insertAttendanceOnline(group.toUpperCase());///new one
                        dismiss();
                    }
                }

@@ -69,12 +69,16 @@ public class AdapterGroupSelection extends  RecyclerView.Adapter<AdapterGroupSel
     void onClickGroupCard(String group) {
         if(flag=="2"){
             // reset attendance
-            DataBaseHelper db =new DataBaseHelper(context);
-            db.reSetAttendance(group);
-            db.deleteAttendanceRows(group);
-            Toast.makeText(context, "Attendance of "+group+" is Reset", Toast.LENGTH_SHORT).show();
-
-            new DataBaseHelper(context).resetAttendanceIntoFirebase(group.toUpperCase());
+            // 4 lines here data to toast
+            new DataBaseHelper(context).resetAttendanceIntoFirebase(group.toUpperCase(), new DataBaseHelper.OnresetAttendance() {
+                @Override
+                public void onResetAttendance() {
+                    DataBaseHelper db =new DataBaseHelper(context);
+                    db.reSetAttendance(group);
+                    db.deleteAttendanceRows(group);
+                    Toast.makeText(context, "Attendance of "+group+" is Reset", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         } else if (flag=="1") {
             //take attendance
