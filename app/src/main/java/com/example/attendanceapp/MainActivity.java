@@ -1,5 +1,6 @@
 package com.example.attendanceapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
@@ -17,16 +18,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AdapterGroupAverage.OnItemClickListener{
     CardView downloadCard,detainedListCard,takeAttendanceCard,resetAttendance,modifyAttendance,deleteAttendance;
-    AppCompatButton manageButton;
+    AppCompatButton manageButton,settings;
     ArrayList<String> arrayList;
 
     LinearLayout attendanceSection,nothingHere;
     RecyclerView recyclerView;
     AdapterGroupAverage adapter;
+    String USERS="USERS";
+    String TEACHERS ="TEACHERS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,13 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter=new AdapterGroupAverage(this,arrayList,getSupportFragmentManager(),this);
         recyclerView.setAdapter(adapter);
+        settings=findViewById(R.id.settingsBtn);
+        //fetchData();
+        checkData();
+
+        settings.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(),SettingsActivity.class).putExtra("name","monu".toString()));
+        });
 
 //        prepareScreen();
 
@@ -193,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         }
     }
 
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -226,8 +244,26 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         new DataBaseHelper(getApplicationContext()).exportDatabase(getApplicationContext());
+    }
+
+    void checkData(){
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+            FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists()){
+                       TeacherData.CollageId=snapshot.child("collageId").getValue().toString();
+                        Toast.makeText(MainActivity.this, TeacherData.CollageId, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 }

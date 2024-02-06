@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,6 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public DataBaseHelper(Context context) {
         super(context, DB_NAME, null,DB_VERSION );
         this.context=context;
+        COLLAGE_ID=TeacherData.CollageId;
     }
 
     @Override
@@ -826,7 +828,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     void uploadBackup(Context context){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference backupRef = storageRef.child(BackupRefference).child(USER_NAME).child(BACKUP_FILE);
+        StorageReference backupRef = storageRef.child(BackupRefference).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(BACKUP_FILE);
 //        String backupDBPath = Environment.getExternalStorageDirectory() + File.separator + BACKUP_FILE;
         String backupDBPath = context.getCacheDir() + File.separator + BACKUP_FILE;
 
@@ -851,10 +853,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    void downloadBackup(Context context){
+    void downloadBackup(Context context,OnDataStored callback){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference backupRef = storageRef.child(BackupRefference).child(USER_NAME).child(BACKUP_FILE);
+        StorageReference backupRef = storageRef.child(BackupRefference).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(BACKUP_FILE);
         File localFile = new File(context.getDatabasePath(BACKUP_FILE).getAbsolutePath());
 
         backupRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
@@ -864,18 +866,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 // Now you can proceed to restore the database
                 Toast.makeText(context, "Backup Download ", Toast.LENGTH_SHORT).show();
                 // You may want to notify the user or perform any additional actions
-                storeBackup(context);
+                storeBackup(context,callback);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle failed download
                 Toast.makeText(context, "Backup Download failed", Toast.LENGTH_SHORT).show();
-
+                callback.onDataStored();
             }
         });
     }
-    void storeBackup(Context context){
+    void storeBackup(Context context,OnDataStored callbak){
         try {
             String currentDBPath = context.getDatabasePath(DB_NAME).getAbsolutePath();
             File currentDB = context.getDatabasePath(currentDBPath);
@@ -894,18 +896,40 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 // Database restored successfully
                 // You may want to notify the user or perform any additional actions
                 Toast.makeText(context, "Backup Stored", Toast.LENGTH_SHORT).show();
+                callbak.onDataStored();
 
             }
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "Backup Stored failed", Toast.LENGTH_SHORT).show();
-
+            callbak.onDataStored();
         }
     }
 
-    void uploadAttendance(String group){
-        String Table=getAtendanceTableName(group);
+   interface OnDataStored{
+        default void onDataStored(){
 
+        }
+   }
+
+    public void deleteDatabase() {
+        // Specify the database name
+        String dbName = DB_NAME;
+
+        // Get the directory of the application's databases
+        File dbFile = context.getDatabasePath(dbName);
+
+        // Check if the database file exists
+        if (dbFile.exists()) {
+            // Attempt to delete the database file
+            if (context.deleteDatabase(dbName)) {
+                System.out.println("Database deleted successfully.");
+            } else {
+                System.out.println("Failed to delete database.");
+            }
+        } else {
+            System.out.println("Database file does not exist.");
+        }
     }
 
 
@@ -970,7 +994,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     String COLLAGES="COLLAGES";
-    String COLLAGE_ID = "12345";
+    String COLLAGE_ID =null;
 
 
     String GROUPS = "GROUPS";
@@ -983,7 +1007,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     private void storeAttendanceIntoFirebase(String rollno, String name, String group, String date, String attendance,String percentage) {
         DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(COLLAGE_ID).child(ROLLNO).child(rollno);
-
         attendanceRef.child(NAME).setValue(name);
         attendanceRef.child(GROUPS).child(group).child(PERCENTAGE).setValue(percentage);
         attendanceRef.child(GROUPS).child(group).child(ATTENDANCE).child(date).setValue(attendance);

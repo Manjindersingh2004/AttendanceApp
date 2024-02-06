@@ -1,5 +1,6 @@
 package com.example.attendanceapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,27 +13,35 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SplashScreenActivity extends AppCompatActivity {
     LinearLayout layout;
+    String USERS="USERS";
+    String TEACHERS ="TEACHERS";
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         layout=findViewById(R.id.linearLayout);
+        progressBar=findViewById(R.id.progressBarSplash);
         scaleAnimation(layout);
-        new DataBaseHelper(getApplicationContext()).downloadBackup(getApplicationContext());
-
 
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
-                startActivity(i);
-                finish();
+                checkData();
             }
         }, 2000);
     }
@@ -74,5 +83,33 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         // Start the animation
         view.startAnimation(scaleAnimation);
+    }
+
+    void checkData(){
+        progressBar.setVisibility(View.VISIBLE);
+       if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+           FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull DataSnapshot snapshot) {
+                   if(snapshot.exists()){
+                       startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                   }
+                   else{
+                       startActivity(new Intent(getApplicationContext(), CreateOrJoinGroupActivity.class));
+                   }
+                   progressBar.setVisibility(View.GONE);
+                   finish();
+               }
+               @Override
+               public void onCancelled(@NonNull DatabaseError error) {
+
+               }
+           });
+       }
+       else {
+           progressBar.setVisibility(View.GONE);
+           startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+           finish();
+       }
     }
 }
