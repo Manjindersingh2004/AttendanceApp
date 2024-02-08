@@ -25,7 +25,7 @@ import java.util.Collections;
 public class FireBaseHelper {
     Context context;
     String COLLAGES="COLLAGES";
-    String COLLAGE_ID = "12345";
+    String COLLAGE_ID ;
 
 
     FireBaseHelper(Context context){

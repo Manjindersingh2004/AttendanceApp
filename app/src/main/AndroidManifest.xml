@@ -20,6 +20,12 @@
         android:theme="@style/Theme.AttendanceApp"
         tools:targetApi="34">
         <activity
+            android:name=".AdminPageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VerificationScreen"
+            android:exported="false" />
+        <activity
             android:name=".CreateOrJoinGroupActivity"
             android:exported="false" />
         <activity

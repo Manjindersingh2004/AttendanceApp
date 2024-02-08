@@ -31,6 +31,7 @@ public class JoinCollageActivity extends AppCompatActivity {
     String Teachers="TEACHERS";
     String COLLAGES="COLLAGES";
     String PASSWORD="PASSWORD";
+    String VERIFICATION="VERIFICATION";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,9 @@ public class JoinCollageActivity extends AppCompatActivity {
         collageEdt =findViewById(R.id.collageEdtJoinCollage);
         passEdit=findViewById(R.id.passEdtJoinCollage);
         progressBar=findViewById(R.id.progressBarJoinCollage);
+
+        DatabaseReference refference= FirebaseDatabase.getInstance().getReference().child(USERS).child(Teachers);
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
 
         back.setOnClickListener(v -> {
             finish();
@@ -77,18 +81,64 @@ public class JoinCollageActivity extends AppCompatActivity {
                                 FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(collageid.toUpperCase().trim()).child(PASSWORD).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                                         String OriginalPassword=snapshot.getValue().toString();
                                         if(password.equals(OriginalPassword)){
-                                            FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-                                            TeacherData data=new TeacherData("false",collageid);
-                                            DatabaseReference refference= FirebaseDatabase.getInstance().getReference().child(USERS).child(Teachers);
-                                            refference.child(user.getUid().toString()).setValue(data).addOnCompleteListener(JoinCollageActivity.this, new OnCompleteListener<Void>() {
+                                            FirebaseDatabase.getInstance().getReference().child(VERIFICATION).child(COLLAGES).child(collageid).child(removeSpecialCharacters(user.getEmail())).addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if(task.isSuccessful()){
-                                                        startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK ));
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if(snapshot.exists()){
+                                                        VerificationDataModel verData=snapshot.getValue(VerificationDataModel.class);
+                                                        if(verData.Verified.equals("TRUE")){
+                                                            startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK ));
+                                                        }else{
+                                                            startActivity(new Intent(getApplicationContext(), VerificationScreen.class));
+                                                            finish();
+                                                        }
+
+                                                    }else{
+                                                        refference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                if(snapshot.exists()){
+                                                                    TeacherData data=snapshot.getValue(TeacherData.class);
+                                                                    data.CollageId=collageid;
+                                                                    data.Admin="FALSE";
+                                                                    refference.child(user.getUid().toString()).setValue(data).addOnCompleteListener(JoinCollageActivity.this, new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                            if(task.isSuccessful()){
+                                                                                VerificationDataModel verData=new VerificationDataModel(data.Name,data.Mobile,user.getEmail(),"FALSE");
+                                                                                FirebaseDatabase.getInstance().getReference().child(VERIFICATION).child(COLLAGES).child(collageid).child(removeSpecialCharacters(user.getEmail())).setValue(verData).addOnCompleteListener(JoinCollageActivity.this, new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                        if(task.isSuccessful()){
+                                                                                            startActivity(new Intent(getApplicationContext(), VerificationScreen.class));
+                                                                                            finish();
+                                                                                        }else{
+                                                                                            Toast.makeText(JoinCollageActivity.this, "error", Toast.LENGTH_SHORT).show();
+                                                                                        }
+                                                                                        progressBar.setVisibility(View.GONE);
+                                                                                    }
+                                                                                });
+                                                                            }
+
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                                progressBar.setVisibility(View.GONE);
+                                                            }
+                                                        });
                                                     }
-                                                    progressBar.setVisibility(View.GONE);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
                                                 }
                                             });
                                         }else{
@@ -116,5 +166,9 @@ public class JoinCollageActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public String removeSpecialCharacters(String str) {
+        // Using regex to replace all characters except letters, digits, @, and .
+        return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 }

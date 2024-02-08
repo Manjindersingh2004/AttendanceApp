@@ -16,8 +16,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CollageCreateActivity extends AppCompatActivity {
     Button createBtn;
@@ -92,18 +95,33 @@ public class CollageCreateActivity extends AppCompatActivity {
                             }
                             else{
                                 FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-                                TeacherData data=new TeacherData("TRUE",collageid);
+                                //TeacherData data=new TeacherData("TRUE",collageid);
                                 DatabaseReference refference= FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS);
-                                refference.child(user.getUid().toString()).setValue(data).addOnCompleteListener(CollageCreateActivity.this, new OnCompleteListener<Void>() {
+                                refference.child(user.getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
-                                            FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(collageid.toUpperCase().trim()).child(PASSWORD).setValue(password);
-                                            startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK ));
-                                        }
-                                        progressBar.setVisibility(View.GONE);
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        TeacherData data=snapshot.getValue(TeacherData.class);
+                                        data.Admin="TRUE";
+                                        data.CollageId=collageid;
+
+                                        refference.child(user.getUid().toString()).setValue(data).addOnCompleteListener(CollageCreateActivity.this, new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+                                                    FirebaseDatabase.getInstance().getReference().child(COLLAGES).child(collageid.toUpperCase().trim()).child(PASSWORD).setValue(password);
+                                                    startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK ));
+                                                }
+                                                progressBar.setVisibility(View.GONE);
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
                                     }
                                 });
+
                             }
                         }
                     });

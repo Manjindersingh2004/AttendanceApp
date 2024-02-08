@@ -36,7 +36,7 @@ import java.util.List;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String BackupRefference="BACKUPS";
-    private static final String USER_NAME="MSsandhu2004";
+
     private static final String BACKUP_FILE="backup.db";
     private static final String DB_NAME="student_attendance";
     private static final int DB_VERSION=1;
@@ -58,7 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public DataBaseHelper(Context context) {
         super(context, DB_NAME, null,DB_VERSION );
         this.context=context;
-        COLLAGE_ID=TeacherData.CollageId;
+        COLLAGE_ID=TeacherDataStatic.CollageId;
     }
 
     @Override

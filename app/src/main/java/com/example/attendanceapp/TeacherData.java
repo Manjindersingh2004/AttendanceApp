@@ -1,19 +1,22 @@
 package com.example.attendanceapp;
 
 public class TeacherData {
-    static String Admin;
-    static String CollageId;
+    String Admin;
+    String CollageId;
+    String Name;
+    String Mobile;
 
-    TeacherData(){
 
+    public TeacherData() {
     }
-
-    public TeacherData(String admin, String collageId) {
+    public TeacherData(String admin, String collageId, String name, String mobile) {
         Admin = admin;
         CollageId = collageId;
+        Name = name;
+        Mobile = mobile;
     }
 
-    public String getAdmin() {
+    public  String getAdmin() {
         return Admin;
     }
 
@@ -21,11 +24,27 @@ public class TeacherData {
         Admin = admin;
     }
 
-    public String getCollageId() {
+    public  String getCollageId() {
         return CollageId;
     }
 
-    public void setCollageId(String collageId) {
+    public  void setCollageId(String collageId) {
         CollageId = collageId;
+    }
+
+    public  String getName() {
+        return Name;
+    }
+
+    public  void setName(String name) {
+        Name = name;
+    }
+
+    public  String getMobile() {
+        return Mobile;
+    }
+
+    public  void setMobile(String mobile) {
+        Mobile = mobile;
     }
 }

@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
         checkData();
 
         settings.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(),SettingsActivity.class).putExtra("name","monu".toString()));
+            startActivity(new Intent(getApplicationContext(),SettingsActivity.class));
         });
 
 //        prepareScreen();
@@ -255,8 +255,11 @@ public class MainActivity extends AppCompatActivity implements AdapterGroupAvera
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot.exists()){
-                       TeacherData.CollageId=snapshot.child("collageId").getValue().toString();
-                        Toast.makeText(MainActivity.this, TeacherData.CollageId, Toast.LENGTH_SHORT).show();
+                        TeacherData data=snapshot.getValue(TeacherData.class);
+                        TeacherDataStatic.CollageId= data.getCollageId();
+                        TeacherDataStatic.Name= data.getName();
+                        TeacherDataStatic.Mobile=data.getMobile();
+                        TeacherDataStatic.Admin= data.getAdmin();
                     }
                 }
                 @Override

@@ -71,29 +71,50 @@
             android:textColorHint="@color/black"
             android:enabled="false"
             android:textSize="18sp" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:text="Roll No"
+            android:text="Phone Number"
             android:textSize="18sp" />
 
         <EditText
-            android:id="@+id/rollEditSettings"
+            android:id="@+id/phoneEditSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:background="@drawable/edit_text_bg"
             android:fontFamily="@font/my_font_roboto_thin"
             android:hint="loading..."
-            android:inputType="number"
             android:paddingHorizontal="12dp"
             android:paddingVertical="10dp"
             android:textColor="@color/black"
-            android:enabled="false"
             android:textColorHint="@color/black"
+            android:enabled="false"
             android:textSize="18sp" />
+
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="5dp"-->
+<!--            android:text="Roll No"-->
+<!--            android:textSize="18sp" />-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/rollEditSettings"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:background="@drawable/edit_text_bg"-->
+<!--            android:fontFamily="@font/my_font_roboto_thin"-->
+<!--            android:hint="loading..."-->
+<!--            android:inputType="number"-->
+<!--            android:paddingHorizontal="12dp"-->
+<!--            android:paddingVertical="10dp"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:enabled="false"-->
+<!--            android:textColorHint="@color/black"-->
+<!--            android:textSize="18sp" />-->
 
         <TextView
             android:layout_width="match_parent"
@@ -118,20 +139,20 @@
             android:enabled="false"
             android:textSize="18sp" />
 
+
         <Button
-            android:id="@+id/EditBtn"
+            android:visibility="gone"
+            android:id="@+id/AdminBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="50dp"
             android:backgroundTint="@color/blue_"
             android:fontFamily="@font/my_font_roboto"
             android:gravity="center"
-            android:text="Edit"
+            android:text="Admin Settings"
             android:textColor="@color/white"
             android:textSize="20dp"
             android:layout_marginVertical="10dp" />
-
-
 
 
     </LinearLayout>
@@ -153,7 +174,7 @@
         android:id="@+id/progressBarProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/SignoutBtn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />

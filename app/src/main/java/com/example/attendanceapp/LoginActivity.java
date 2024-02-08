@@ -20,8 +20,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -35,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView forgot;
     String USERS="USERS";
     String TEACHERS ="TEACHERS";
+    String VERIFICATION="VERIFICATION";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,29 +162,89 @@ public class LoginActivity extends AppCompatActivity {
     void checkData(){
         progressBar.setVisibility(View.VISIBLE);
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.exists()){
-                        new DataBaseHelper(getApplicationContext()).downloadBackup(getApplicationContext(), new DataBaseHelper.OnDataStored() {
-                            @Override
-                            public void onDataStored() {
-                                progressBar.setVisibility(View.GONE);
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+           isTeacher();
+        }
+    }
+
+    void isTeacher(){
+        FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+
+                                TeacherData data=snapshot.getValue(TeacherData.class);
+                                if(data.CollageId!=null){
+                                    new DataBaseHelper(getApplicationContext()).downloadBackup(getApplicationContext(), new DataBaseHelper.OnDataStored() {
+                                        @Override
+                                        public void onDataStored() {
+                                            TeacherDataStatic.CollageId= data.getCollageId();
+                                            TeacherDataStatic.Name= data.getName();
+                                            TeacherDataStatic.Mobile=data.getMobile();
+                                            TeacherDataStatic.Admin= data.getAdmin();
+                                            if(data.Admin.equals("FALSE")) verification();
+                                            else startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                        }
+                                    });
+                                }
+                                else{
+                                    progressBar.setVisibility(View.GONE);
+                                    startActivity(new Intent(getApplicationContext(), CreateOrJoinGroupActivity.class));
+                                    finish();
+                                }
                             }
-                        });
-                    }
-                    else{
-                        progressBar.setVisibility(View.GONE);
-                        startActivity(new Intent(getApplicationContext(), CreateOrJoinGroupActivity.class));
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }else{
+                    progressBar.setVisibility(View.GONE);
+                    emailEdt.setError("This userId is linked with student attendance app");
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void verification() {
+        String VERIFICATION="VERIFICATION";
+        String COLLAGES="COLLAGES";
+        String Teachers="TEACHERS";
+        DatabaseReference refference= FirebaseDatabase.getInstance().getReference().child(USERS).child(Teachers);
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase.getInstance().getReference().child(VERIFICATION).child(COLLAGES).child(TeacherDataStatic.CollageId).child(removeSpecialCharacters(user.getEmail())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    VerificationDataModel verData=snapshot.getValue(VerificationDataModel.class);
+                    if(verData.Verified.equals("TRUE")){
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK ));
+                    }else{
+                        startActivity(new Intent(getApplicationContext(), VerificationScreen.class));
                         finish();
                     }
+                }else{
+                    progressBar.setVisibility(View.GONE);
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
 
-                }
-            });
-        }
+    }
+    public String removeSpecialCharacters(String str) {
+        // Using regex to replace all characters except letters, digits, @, and .
+        return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 }
