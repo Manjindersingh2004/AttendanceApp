@@ -8,19 +8,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TEACHERS ="TEACHERS" ;
@@ -33,6 +25,8 @@ public class SettingsActivity extends AppCompatActivity {
     String STUDENTS="STUDENTS";
     TeacherData data;
     String name;
+    String VERIFICATION="VERIFICATION";
+    String COLLAGES="COLLAGES";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +61,7 @@ public class SettingsActivity extends AppCompatActivity {
                    Toast.makeText(this, "Admins Account Can not be deleted", Toast.LENGTH_LONG).show();
                }else{
                    FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).removeValue();
+                   FirebaseDatabase.getInstance().getReference().child(VERIFICATION).child(COLLAGES).child(TeacherDataStatic.CollageId).child(removeSpecialCharacters(FirebaseAuth.getInstance().getCurrentUser().getEmail())).removeValue();
                    FirebaseAuth.getInstance().getCurrentUser().delete();
                    FirebaseAuth.getInstance().signOut();
                    startActivity(new Intent(getApplicationContext(),LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -79,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         admin.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(),AdminPageActivity.class));
+            startActivity(new Intent(getApplicationContext(), ViewMembersActivity.class));
         });
 
 //        editBtn.setOnClickListener(v -> {
@@ -168,5 +163,10 @@ public class SettingsActivity extends AppCompatActivity {
                admin.setVisibility(View.VISIBLE);
            }
        }
+    }
+
+    public String removeSpecialCharacters(String str) {
+        // Using regex to replace all characters except letters, digits, @, and .
+        return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 }

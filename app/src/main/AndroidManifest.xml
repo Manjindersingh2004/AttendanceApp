@@ -20,7 +20,7 @@
         android:theme="@style/Theme.AttendanceApp"
         tools:targetApi="34">
         <activity
-            android:name=".AdminPageActivity"
+            android:name=".ViewMembersActivity"
             android:exported="false" />
         <activity
             android:name=".VerificationScreen"

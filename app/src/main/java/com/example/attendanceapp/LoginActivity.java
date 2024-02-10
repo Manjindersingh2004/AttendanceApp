@@ -205,6 +205,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 }else{
                     progressBar.setVisibility(View.GONE);
+                    FirebaseAuth.getInstance().signOut();
                     emailEdt.setError("This userId is linked with student attendance app");
                 }
             }
