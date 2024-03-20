@@ -40,9 +40,14 @@ public class SplashScreenActivity extends AppCompatActivity {
         layout=findViewById(R.id.linearLayout);
         progressBar=findViewById(R.id.progressBarSplash);
         scaleAnimation(layout);
-        if(!NetworkUtils.isNetworkAvailable(getApplicationContext()))
-            Toast.makeText(SplashScreenActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-        checkData();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!NetworkUtils.isNetworkAvailable(getApplicationContext()))
+                    Toast.makeText(SplashScreenActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                checkData();
+            }
+        },1000);
     }
 
     private void scaleAnimation(View view) {

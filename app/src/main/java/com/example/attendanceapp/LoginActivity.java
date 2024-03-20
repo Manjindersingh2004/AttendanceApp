@@ -88,12 +88,14 @@ public class LoginActivity extends AppCompatActivity {
                                     checkData();
                                 }
                                 else{
+                                    progressBar.setVisibility(View.GONE);
                                     showAlertDialog();
                                     FirebaseAuth.getInstance().signOut();
                                     Toast.makeText(LoginActivity.this, "Email not verified", Toast.LENGTH_SHORT).show();
                                 }
                             }
                             else{
+                                progressBar.setVisibility(View.GONE);
                                 try{
                                     throw task.getException();
                                 }catch(FirebaseAuthInvalidUserException e){
@@ -107,7 +109,6 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(LoginActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            progressBar.setVisibility(View.GONE);
                         }
                     });
 
@@ -167,6 +168,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     void isTeacher(){
+        progressBar.setVisibility(View.VISIBLE);
         FirebaseDatabase.getInstance().getReference().child(USERS).child(TEACHERS).child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
